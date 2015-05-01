@@ -3,7 +3,10 @@
 #include <string>
 #include <vector>
 #include <map>
-//typedef device_matrix<float> mat;
+#include <algorithm>
+#include <cstdlib> // rand()
+#include <ctime>
+typedef device_matrix<float> mat;
 /*struct mapData {
 	size_t phoneme;
 	float* inputFeature;
@@ -69,13 +72,9 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 	while(getline(fin, s) && count<trainDataNum){
 		count++;
 
-//		cout<<count<<endl;
 		unsigned int pos  = s.find(" ");
 		unsigned int initialPos = 0;
 		split=0;
-		//string tmpName;
-	    //mapData tmpData;
-		//tmpData.inputFeature = new float[inputDim];	
 		while(split<inputDim+1){
 			dataCount++;
 			split++;
@@ -83,22 +82,15 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 			tempStr= s.substr(initialPos, pos-initialPos);
 			if (split==1){
 				*(_trainDataNameMatrix+count-1) = tempStr;
-				//cout<<*(_trainDataNameMatrix+count-1)<<endl;	
-				//tmpName = tempStr;
 			}
 
 			else{
 				_trainDataMatrix[count-1][split-2] = atof(tempStr.c_str());
-				//cout<<_trainDataMatrix[count-1][split-2]<<endl;
-				//tmpData.inputFeature[split-2] = atof(tempStr.c_str());
 			}		
 			initialPos = pos+1;
 			pos=s.find(" ", initialPos);
 		}		
-		//InputMap.insert(pair<string, mapData>(tmpName, tmpData));
 	}		
-	//cout<<count<<endl;
-	//cout<<dataCount<<endl;
 	
 	fin.close();	
 	cout << "inputting testing file:\n";
@@ -110,14 +102,11 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 		_testDataMatrix[i] = new float [inputDim];
 	}
 	
-	//cout<<"Test starts"<<endl;
 	ifstream finTest(testPath);
 	if(!finTest) cout<<"Can't open this file!!!\n";
 	string sTest, tempStrTest;
 	while(getline(finTest, sTest)&&testCount<testDataNum){
 		testCount++;
-		//cout<<testCount<<endl;
-		//cout<<count<<endl;
 		unsigned int posTest  = sTest.find(" ");
 		unsigned int initialPos = 0;
 		split=0;
@@ -126,25 +115,16 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 			split++;
 			
 			tempStrTest= sTest.substr(initialPos, posTest-initialPos);
-			//cout<<"After test subsrt"<<endl;
 			if (split==1){
 				*(_testDataNameMatrix+testCount-1) = tempStrTest;
-				//cout<<*(_testDataNameMatrix+testCount-1)<<endl;	
 			}
 			else{
 				_testDataMatrix[testCount-1][split-2] = atof(tempStrTest.c_str());
-				//cout<<_dataMatrix[count-1][split-2]<<endl;
 			}		
 			initialPos = posTest+1;
 			posTest=sTest.find(" ", initialPos);
 		}		
 	}
-	/*
-	cout<<sizeof _testDataMatrix<<endl;	
-	cout<<sizeof _testDataMatrix[0]<<endl;	
-	cout<<testCount<<endl;
-	cout<<testDataCount<<endl;
-	*/
 	finTest.close();
 
 	cout << "inputting training label file:\n";
@@ -159,7 +139,6 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 	while(getline(finLabel, sLabel)){
 		countLabel++;
 
-		//cout<<count<<endl;
 		unsigned int pos  = sLabel.find(",");
 		unsigned int initialPos = 0;
 		split=0;
@@ -169,55 +148,28 @@ Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPat
 			split++;
 			
 			tempStrLabel = sLabel.substr(initialPos, pos-initialPos);
-			//if (split == 1) tmpName = tempStrLabel;
 
 			if (split==2){
 				if(tempStrLabel.compare(preLabel)!=0){
 					if(_labelMap.find(tempStrLabel)==_labelMap.end()){
 						numForLabel++;
-						//preLabel = tempStrLabel;
 						_labelMap.insert(pair<string, int>(tempStrLabel, numForLabel));	
-						//cout<<numForLabel<<endl;
 					}
 					preLabel = tempStrLabel;
 				}
 
 			
 			*(_labelMatrix+countLabel-1)=_labelMap.find(tempStrLabel)->second;
-			//InputMap.find(tmpName)->second.phoneme =_labelMap.find(tempStrLabel)->second; 
-			//cout<<tempStrLabel<<endl;		
-
-					
-			//*(_labelMatrix+countLabel-1) = tempStrLabel;
-			//	cout<<*(_labelMatrix+count-1)<<endl;	
 			}
 			initialPos = pos+1;
 			pos=sLabel.find(",", initialPos);
 		}		
 	}		
-	//cout<<countLabel<<endl;
-	//cout<<labelDataCount<<endl;
 	
 	finLabel.close();	
 	// initialize all pointers
 	dataSegment(0.9);
 	// put things into dataMatrix
-	/*
-	cout << "putting them into pointers:\n";
-	int mapCount = 0;
-	for (NameFtreMap::const_iterator it = InputMap.begin();
-		 it != InputMap.end(); ++it){
-		 _trainDataMatrix[mapCount] = it->second.inputFeature;
-		 _labelMatrix[mapCount] = it->second.phoneme;
-		 mapCount ++;
-	}
-	*/
-	/*
-	for (NameFtreMap::const_iterator it = InputMap.begin();
-		 it != InputMap.end(); ++it){
-		 delete[] it->second.inputFeature;
-	}
-	*/
 };
 Dataset::Dataset(Data data, char mode){
 	
@@ -270,27 +222,20 @@ Dataset::Dataset(Data data, char mode){
 			}		
 			
 		}	
-		
-		
-		//fin.close();
 	
 		_trainDataNameMatrix = new string[data.trainDataNum];
 		_trainDataMatrix = new float*[data.trainDataNum];
 		
 		for(int i=0;i<data.trainDataNum;i++){
 			_trainDataMatrix[i]=new float[data.inputDim*(2*_frameRange+1)];
-//			cout<<data.inputDim*(2*_frameRange+1)<<endl;
 		}
 		for(int i=0;i<data.trainDataNum;i++){
 			unsigned int pos = (*(tempTrainDataNameMatrix+i)).find_last_of("_");				
-			//cout<<*(tempTrainDataNameMatrix+i)<<endl;
 			_trainDataNameMatrix[i]=tempTrainDataNameMatrix[i];
 			string str = _trainDataNameMatrix[i].substr(0,pos);
 			unsigned int num = atoi(_trainDataNameMatrix[i].substr(pos+1).c_str());
-			//cout<<"num"<<num<<endl;
 			for(int j =(_frameRange*(-1));j<=_frameRange;j++){
 				int k = j;
-				//cout<<"j:"<<j<<endl;
 				if(num+j<1||(i+j)>=_numOfTrainData){
 					k=0;	
 				}
@@ -324,7 +269,6 @@ Dataset::Dataset(Data data, char mode){
 		ifstream finTest(data.testPath);
 		if(!finTest) cout<<"Can't open the test data!\n";
 		else cout<<"Inputting test data!\n";
-		//string s, tempStr;
 		while(getline(finTest,s)&&count<data.testDataNum){
 			count++;
 			size_t pos = s.find(" ");
@@ -348,9 +292,6 @@ Dataset::Dataset(Data data, char mode){
 			}		
 			
 		}	
-		
-		
-		//fin.close();
 	
 		_testDataNameMatrix = new string[data.testDataNum];
 		_testDataMatrix = new float*[data.testDataNum];
@@ -360,14 +301,11 @@ Dataset::Dataset(Data data, char mode){
 		}
 		for(int i=0;i<data.testDataNum;i++){
 			unsigned int pos = (*(tempTestDataNameMatrix+i)).find_last_of("_");				
-			//cout<<*(tempTrainDataNameMatrix+i)<<endl;
 			_testDataNameMatrix[i]=tempTestDataNameMatrix[i];
 			string str = _testDataNameMatrix[i].substr(0,pos);
 			unsigned int num = atoi(_testDataNameMatrix[i].substr(pos+1).c_str());
-			//cout<<"num"<<num<<endl;
 			for(int j =(_frameRange*(-1));j<=_frameRange;j++){
 				int k = j;
-				//cout<<"j:"<<j<<endl;
 				if(num+j<1||(i+j)>=_numOfTestData){
 					k=0;	
 				}
@@ -407,7 +345,6 @@ Dataset::Dataset(Data data, char mode){
 				split++;
 			
 				tempStrLabel = sLabel.substr(initialPos, pos-initialPos);
-	//			cout<<"tempStrLabel: "<<tempStrLabel<<endl;
 				if (split == 1) tmpName = tempStrLabel;
 
 				if (split==2){
@@ -426,8 +363,6 @@ Dataset::Dataset(Data data, char mode){
 			pos=sLabel.find(",", initialPos);
 		}		
 	}		
-	//cout<<countLabel<<endl;
-	//cout<<labelDataCount<<endl;
 	
 	finLabel.close();	
 			
@@ -479,20 +414,14 @@ Dataset::~Dataset(){
 		delete []_labelMatrix;
 	}
 	if (_trainX != NULL){
-		//for (int i = 0; i < _trainSize; i++ )
-		//	delete[] _trainX[i];
 		delete[] _trainX;
 	}
 	if (_validX != NULL){
-		//for (int i = 0; i < _validSize; i++ )
-		//	delete[] _validX[i];
 		delete[] _validX;
 	}
 	delete[] _trainY;
 	delete[] _validY;
 
-	//TODO deletion for pointers
-	// NOTE:: deletion for _trainX _validX _trainY _validY need careful implementation!!
 };
 
 void Dataset::saveCSV(vector<size_t> testResult){
@@ -510,11 +439,9 @@ void Dataset::saveCSV(vector<size_t> testResult){
 		for(map<string,int>::iterator it = _labelMap.begin();it!=_labelMap.end();it++){
 			if(it->second==testResult.at(i)){
 				phoneme = it->first;
-	//			cout<<phoneme<<endl;
 				break;
 			}
 		}
-		//	map<string, string>iterator it2 = _To39PhonemeMap.find(phoneme);
 			phoneme = _To39PhonemeMap.find(phoneme)->second;
 
 		fout<<phoneme<<endl;
@@ -523,11 +450,8 @@ void Dataset::saveCSV(vector<size_t> testResult){
 	fout.close();
 }
 
-
-
 //Get function
 mat Dataset::getTestSet(){
-	//cout << "size of test set: " << getInputDim() << " " << _numOfTestData << endl;
 	return inputFtreToMat(_testDataMatrix, getInputDim(), _numOfTestData);
 }
 mat Dataset::getTestSet(float** testData,size_t frameRange, size_t testNum){
@@ -593,3 +517,187 @@ void   Dataset::printLabelMap(map<string, int> Map){
 	}
 	
 }
+/************************************
+***********MASTER WU*****************
+************************************/
+void Dataset::getBatch(int batchSize, mat& batch, mat& batchLabel){
+	// use shuffled trainX to get batch sequentially
+	float** batchFtre = new float*[batchSize];
+	int*    batchOutput = new int[batchSize];
+	for (int i = 0; i < batchSize; i++){
+		batchFtre[i] = _trainX[ _batchCtr % _trainSize ];
+		batchOutput[i] = _trainY[ _batchCtr % _trainSize ];
+		_batchCtr ++;
+	}
+
+	batch = inputFtreToMat( batchFtre, getInputDim(), batchSize);
+	batchLabel = outputNumtoBin( batchOutput, batchSize );
+	// free tmp pointers
+	delete[] batchOutput;
+	delete[] batchFtre;
+	batchOutput = NULL;
+	batchFtre = NULL;
+	// for debugging, print both matrices
+}
+
+void Dataset::getTrainSet(int trainSize, mat& trainData, vector<size_t>& trainLabel){
+	if (_trainSetFlag == true){
+		trainData = trainMat;
+		return;
+	}
+	if (trainSize > _trainSize){
+		cout << "requested training set size overflow, will only output "
+		     << _trainSize << " training sets.\n";
+		trainSize = _trainSize;
+	}
+	trainLabel.clear();
+	// random initialize
+		
+	int* randIndex = new int [trainSize];
+	for (int i = 0; i < trainSize; i++){
+		if (trainSize == _trainSize)
+			randIndex[i] = i;
+		else
+			randIndex[i] = rand() % _trainSize; 
+	}
+	float** trainFtre = new float*[trainSize];
+	for (int i = 0; i < trainSize; i++){
+		trainFtre[i] = _trainX[ randIndex[i] ];
+		trainLabel.push_back( _trainY[ randIndex[i] ] );
+	}
+	trainData = inputFtreToMat(trainFtre, getInputDim(), trainSize);
+	
+	_trainSetFlag = true;
+	trainMat = trainData;
+	delete[] randIndex;
+	delete[] trainFtre;
+	randIndex = NULL;
+	trainFtre = NULL;
+}
+
+void Dataset::getValidSet(int validSize, mat& validData, vector<size_t>& validLabel){
+	if (_validSetFlag == true){
+		validData = validMat;
+		return;
+	}
+	if (validSize > _validSize){
+		cout << "requested valid set size is too big, can only feed in " << _validSize << " data.\n";
+	validSize = _validSize;
+	}
+	validLabel.clear();
+	// random choose index
+	cout << "validate size is : " << validSize << " " << _validSize << endl;
+	int* randIndex = new int [validSize];
+	for (int i = 0; i < validSize; i++){
+		if (validSize == _validSize)
+			randIndex[i] = i;
+		else
+			randIndex[i] = rand() % _validSize; 
+	}
+	float** validFtre = new float*[validSize];
+	for (int i = 0; i < validSize; i++){
+		validFtre[i] = _validX[ randIndex[i] ];
+		validLabel.push_back( _validY[ randIndex[i] ] );
+	}
+	validData = inputFtreToMat(validFtre, getInputDim(), validSize);
+	
+	_validSetFlag = true;
+	validMat = validData;
+	delete[] validFtre;
+	delete[] randIndex;
+	validFtre = NULL;
+	randIndex = NULL;
+}
+
+
+
+
+void Dataset::dataSegment( float trainProp ){
+	if (_trainX != NULL){
+		delete _trainX;
+		delete _trainY;
+		delete _validX;
+		delete _validY;
+	}
+	cout << "start data segmenting:\n";
+	cout << "num of data is "<< getNumOfTrainData() << endl;
+	// segment data into training and validating set
+	_trainSize = trainProp*getNumOfTrainData();
+	_validSize = getNumOfTrainData() - _trainSize;
+	
+	//create random permutation
+	vector<int> randIndex;
+	
+	for (int i = 0; i < getNumOfTrainData(); i++){
+		randIndex.push_back( i );
+	}
+	random_shuffle(randIndex.begin(), randIndex.end());
+	// print shuffled data
+	cout << "start shuffling:\n";
+	/*
+	for (int i = 0; i < getNumOfTrainData(); i++){
+		cout << randIndex[i] <<" ";
+	}
+	*/
+	// 
+	cout << "put feature into training set\n";
+	cout << "trainingsize = " << _trainSize <<endl;
+	_trainX = new float*[_trainSize];
+	_trainY = new int[_trainSize];
+	for (int i = 0; i < _trainSize; i++){
+		_trainX[i] = _trainDataMatrix[ randIndex[i] ]; 
+		_trainY[i] = _labelMatrix[ randIndex[i] ];  // depends on ahpan
+	}
+	cout << "put feature into validating set\n";
+	cout << "validatingsize = " << _validSize <<endl;
+	_validX = new float*[_validSize];
+	_validY = new int[_validSize];
+	for (int i = 0; i < _validSize; i++){
+		_validX[i] = _trainDataMatrix [ randIndex[_trainSize + i] ];
+		_validY[i] = _labelMatrix[ randIndex[_trainSize + i] ];
+	}
+	// debugging, print out train x y valid x y
+}
+mat Dataset::outputNumtoBin(int* outputVector, int vectorSize)
+{
+	float* tmpVector = new float[ vectorSize * _numOfLabel ];
+	for (int i = 0; i < vectorSize; i++){
+		for (int j = 0; j < _numOfLabel; j++){
+			*(tmpVector + i*_numOfLabel + j) = (outputVector[i] == j)?1:0;
+		}
+	}
+
+	mat outputMat(tmpVector, _numOfLabel, vectorSize);
+	delete[] tmpVector;
+	tmpVector = NULL;
+	return outputMat;
+}
+mat Dataset::inputFtreToMat(float** input, int r, int c){
+	// r shall be the number of Labels
+	// c shall be the number of data
+	float* inputReshaped = new float[r * c];
+	for (int i = 0; i < c; i++){
+		for (int j = 0; j < r; j++){
+			//*(inputReshaped + i*r + j) = *(*(input + i) +j);
+			*(inputReshaped + i*r + j) = input[i][j];
+		}
+	}
+	mat outputMat(inputReshaped, r, c);
+	delete[] inputReshaped;
+	inputReshaped = NULL;
+	return outputMat;
+}
+void Dataset::prtPointer(float** input, int r, int c){
+	//cout << "this prints the pointer of size: " << r << " " << c << endl;
+	for (int i = 0; i < c; i++){
+		cout << i << endl;
+		for(int j = 0; j < r; j++){
+			cout <<input[i][j]<<" ";
+			if ((j+1)%5 == 0) cout <<endl;
+		}
+		cout <<endl;
+	}
+	return;
+}
+
+

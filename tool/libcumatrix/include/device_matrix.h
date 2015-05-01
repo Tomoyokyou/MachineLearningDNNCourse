@@ -154,6 +154,7 @@ public:
   device_matrix<T> operator * (const Transposed& rhs) const;
 //modified
   device_matrix<T> operator & (const device_matrix<T>& rhs) const;
+  device_matrix<T>& operator &= (const device_matrix<T>& rhs);
 
 //ends here
 

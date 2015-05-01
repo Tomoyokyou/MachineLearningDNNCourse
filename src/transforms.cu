@@ -18,14 +18,13 @@ using namespace ext;
 
 typedef device_matrix<float> mat;
 /////////////helper functions//////////////////////
-
 template<typename T>
-struct linear_index_to_row_index : public thrust::unary_function<T,T>
+struct linear_index_to_col_index : public thrust::unary_function<T,T>
 {
 	T C;
 
 	__host__ __device__
-	linear_index_to_row_index(T C) : C(C) {}
+	linear_index_to_col_index(T C) : C(C) {}
 	
 	__host__ __device__
 	T operator()(T i)
@@ -33,13 +32,12 @@ struct linear_index_to_row_index : public thrust::unary_function<T,T>
 			return i/C;
 	}
 };
+void substractMaxPerCol(mat& x);
+mat getColMax(mat& C);
+__global__ void substract_max_per_col(float* const A,float* const rmax, unsigned int rows , unsigned int cols);
 
-void substractMaxPerRow(mat& x);
-mat getRowMax(mat& C);
-__global__ void substract_max_per_row(float* const A,float* const rmax, unsigned int rows , unsigned int cols);
-
-void substractMaxPerRow(mat& x) {
-	mat rmax = getRowMax(x);
+void substractMaxPerCol(mat& x) {
+	mat rmax = getColMax(x);
 
 	const int N = 32;
 	dim3 grid;
@@ -47,29 +45,27 @@ void substractMaxPerRow(mat& x) {
 	grid.y = (unsigned int) ceil((float) x.getRows() / N );
 	dim3 threads(N,N);
 
-	substract_max_per_row<<<grid, threads>>>(x.getData(),rmax.getData() , x.getRows(),x.getCols());
+	substract_max_per_col<<<grid, threads>>>(x.getData(),rmax.getData() , x.getRows(),x.getCols());
 	CCE(cudaDeviceSynchronize());
 }
 
 
-__global__ void substract_max_per_row(float* const A, float * const rmax, unsigned int rows,unsigned int cols){
+__global__ void substract_max_per_col(float* const A, float * const rmax, unsigned int rows,unsigned int cols){
 	int x = blockIdx.x + threadIdx.x;
 	int y = blockIdx.y * blockDim.y + threadIdx.y;
 
 	if (x >= cols|| y>= rows)
 			return;
-	A[x * rows +y] -= rmax[y];
+	A[x * rows +y] -= rmax[x];
 }
-
-mat getRowMax(mat& C)
+mat getColMax(mat& C)
 {
-	mat rmax(C.getRows(),1);
-	mat At = ~C;
-	thrust::device_vector<float>row_indices(C.getRows());
-	thrust::device_vector<float>row_results(C.getRows());
+	mat rmax(C.getCols(),1);
+	thrust::device_vector<float>row_indices(C.getCols());
+	thrust::device_vector<float>row_results(C.getCols());
 	thrust::reduce_by_key
-	(thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_row_index<int>(C.getCols())),
-	 thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_row_index<int>(C.getCols())) +C.size(),thrust::device_ptr<float>(At.getData()),row_indices.begin(),
+	(thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_col_index<int>(C.getRows())),
+	 thrust::make_transform_iterator(thrust::counting_iterator<int>(0), linear_index_to_col_index<int>(C.getRows())) +C.size(),thrust::device_ptr<float>(C.getData()),row_indices.begin(),
 	 thrust::device_ptr<float>(rmax.getData()),thrust::equal_to<float>(),thrust::maximum<float>());
 	
 	return rmax;
@@ -155,15 +151,13 @@ void Sigmoid::backPropagate(mat& out,const mat& delta, float rate,float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	mat one(_i.getRows(),_i.getCols(),1);
-	out = _i & (one-_i) & (~withoutBias * delta);   // this part need tesing
+	gemm(withoutBias,delta,out,(float)1.0,(float)0.0,true,false);
+	out &= _i & (float)1.0-_i;
 	// update weight
 	mat _inp(_i);
 	pushOne(_inp);
 	_pw= delta * ~_inp + _pw * momentum;
-	rate/=(float)_i.getCols();
-	_w -= _pw * rate;
-	//gemm(delta,_inp,_w,(float)-1.0*rate,(float)1.0,false,true);
+	_w -= _pw * (rate/(float)_i.getCols());
 }
 void Sigmoid::write(ofstream& out){
 	out<<"<sigmoid> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;
@@ -184,9 +178,8 @@ Softmax::Softmax(size_t inputdim,size_t outputdim,myNnGen& ran): Transforms(inpu
 void Softmax::forward(mat& out,const mat& in,bool train){
 	mat inp=in;
 	pushOne(inp);
-	mat z=~(_w * inp);
-	substractMaxPerRow(z);
-	z=~z; // transpose to column vectors
+	mat z=_w * inp;
+	substractMaxPerCol(z);
 	mat p(z.getRows(), z.getCols());
 	
 	thrust::device_ptr<float> zPtr(z.getData());
@@ -208,16 +201,13 @@ void Softmax::backPropagate(mat& out,const mat& delta,float rate, float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	mat one(_i.getRows(),_i.getCols(),1);
-	out = _i & (one-_i) & (~withoutBias * delta);   // this part need tesing
+	gemm(withoutBias,delta,out,(float)1.0,(float)0.0,true,false);
+	out &= _i & (float)1.0-_i ;
 	//update weight
 	mat inp(_i);
 	pushOne(inp);	
 	_pw=delta * ~inp + _pw * momentum;
-	rate/=(float)_i.getCols();
-	_w-= _pw * rate;
-	//gemm(delta,inp,_w,(float)-1.0*rate,(float)1.0,false,true);
-	
+	_w-= _pw * (rate/(float)_i.getCols());
 }
 void Softmax::write(ofstream& out){
 	out<<"<softmax> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;

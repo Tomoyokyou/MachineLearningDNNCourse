@@ -309,6 +309,11 @@ device_matrix<T> device_matrix<T>::operator & (const device_matrix<T>& rhs) cons
   return result;
 }
 
+template <typename T>
+device_matrix<T>& device_matrix<T>::operator &= (const device_matrix<T>& rhs){
+	*this=*this & rhs;
+	return *this;
+}
 
 //ends here
 
