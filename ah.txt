@@ -1,5 +1,0 @@
-Validating error: 58.93 %, Training error: 59.07 %,  epoch:30000
-bestMdl: Error at0.5893
-Validating error: 61.455 %, Training error: 61.675 %,  epoch:30500
-Validating error: 62.575 %, Training error: 62.755 %,  epoch:31000
-Validating error: 59.77 %, Training error: 60.06 %,  epoch:31500
