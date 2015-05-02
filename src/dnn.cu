@@ -7,7 +7,12 @@
 #include <fstream>
 #include <cmath>
 #include <cassert>
+#include <ctime>
 #include <device_matrix.h>
+#include <thrust/host_vector.h>
+#include <thrust/device_ptr.h>
+#include <thrust/inner_product.h>
+#include <thrust/extrema.h>
 #include "util.h"
 
 #define MAX_EPOCH 10000000
@@ -33,8 +38,7 @@ DNN::DNN(Dataset* pData, float learningRate,float momentum,float variance,Init i
 				pTransform = new Softmax(v.at(i), v.at(i+1), gn);
 			_transforms.push_back(pTransform);
 		}
-	break;
-	
+		break;
 	case UNIFORM:
 	case RBM:
 	default:
@@ -46,7 +50,7 @@ DNN::DNN(Dataset* pData, float learningRate,float momentum,float variance,Init i
 				pTransform = new Softmax(v.at(i), v.at(i+1), variance);
 			_transforms.push_back(pTransform);
 		}
-	break;
+		break;
 	}
 }
 DNN::~DNN(){
@@ -57,6 +61,8 @@ DNN::~DNN(){
 }
 
 void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNum = 10000, size_t validSetNum = 10000, float alpha = 0.98){
+	clock_t rt1 = clock();
+
 	mat trainSet;
 	vector<size_t> trainLabel;
 	mat validSet;
@@ -71,30 +77,54 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 	
 	_pData->getTrainSet(trainSetNum, trainSet, trainLabel);
 	_pData->getValidSet(validSetNum, validSet, validLabel);
+
+	clock_t rt2 = clock();
+	cout << "Get train/validate set:" << (rt2-rt1)/CLOCKS_PER_SEC << endl;
+	
 	size_t num = 0;
 	for(; num < maxEpoch; num++){
+		clock_t rt3 = clock();
 		mat batchData;
 		mat batchLabel;
 		mat batchOutput;
 		_pData->getBatch(batchSize, batchData, batchLabel);
 		
+		clock_t rt4 = clock();
 		feedForward(batchOutput, batchData, true);
 
-		mat lastDelta(batchOutput - batchLabel );
+		clock_t rt5 = clock();
+		mat lastDelta(batchOutput - batchLabel);
 		backPropagate(lastDelta, _learningRate, _momentum); //momentum
 
-		vector<size_t> trainResult;
-		vector<size_t> validResult;
-		predict(trainResult, trainSet);
-		predict(validResult, validSet);
-
+		clock_t rt6 = clock();	
+		
 		if( num % 200 == 0 )
 			_learningRate *= alpha;
 
 		if( num % 500 == 1 ){
+
+			clock_t rt7 = clock();
+			vector<size_t> trainResult;
+			vector<size_t> validResult;
+			predict(trainResult, trainSet);
+			predict(validResult, validSet);
+
+			clock_t rt8 = clock();
 			Ein = computeErrRate(trainLabel, trainResult);
 			Eout = computeErrRate(validLabel, validResult);
 			
+			clock_t rt9 = clock();
+
+			/*Print debug message here*/
+			double duration = (rt9-rt3);
+			//cout << "Per iteration: " << duration/CLOCKS_PER_SEC << " sec\n";
+			//cout << "Get Batch time: " << (rt4-rt3)/duration << endl;
+			//cout << "Feedforward: " << (rt5-rt4)/duration << endl;
+			//cout << "Backpropagation: " << (rt6-rt5)/duration << endl;
+			//cout << "Predict train/valid err: " << (rt8-rt7)/duration << endl;
+			//cout << "Compute train/valid err: " << (rt9-rt8)/duration << endl;
+
+
 			pastEin  = Ein;
 			pastEout = Eout;
 			if(minEin > Ein){
@@ -252,7 +282,61 @@ void DNN::backPropagate(const mat& deltaMat, float learningRate, float momentum)
 }
 
 //Helper Functions
+/*
+mat posteriorProb2Label(const mat& prob) {
+	assert(prob.getCols() > 1);
+	size_t rows = prob.getRows(), cols = prob.getCols();
+
+	hmat h_prob(prob);
+  	hmat h_labels(1, cols);
+
+  	for (size_t j=0; j<cols; ++j) {
+		float max = -1e10;
+    	size_t maxIdx = 0;
+
+    	for (size_t i=0; i<rows; ++i) {
+      		if (h_prob(i, j) > max) {
+				max = h_prob(i, j);
+				maxIdx = i;
+      		}
+    	}
+    	h_labels[j] = maxIdx;
+  	}
+  return h_labels;
+}
+*/
+
+size_t countDifference(const mat& m1, const mat& m2) {
+	assert(m1.size() == m2.size());
+	
+	size_t L = m1.size();
+  	thrust::device_ptr<float> ptr1(m1.getData());
+ 	thrust::device_ptr<float> ptr2(m2.getData());
+
+  	size_t nDiff = thrust::inner_product(ptr1, ptr1 + L, ptr2, 0.0, thrust::plus<float>(), thrust::not_equal_to<float>());
+  	return nDiff;
+}
+
 void computeLabel(vector<size_t>& result,const mat& outputMat){
+
+	//int data[6] = {1, 0, 2, 2, 1, 3};
+	//int result = thrust::reduce(thrust::host, data, data + 6, -1, thrust::maximum<int>()); // result == 3
+	//thrust::device_vector<float>::iterator iter = thrust::max_element(d_vec.begin(), d_vec.end());
+
+	//unsigned int position = iter - d_vec.begin();
+	//float max_val = *iter;
+	
+	size_t inputDim = outputMat.getRows();
+	size_t featureNum = outputMat.getCols();
+	thrust::device_ptr<float> d_ptr = thrust::device_pointer_cast(outputMat.getData());
+	thrust::host_vector<float> h_vec(d_ptr, d_ptr + inputDim*featureNum);
+	for(size_t j = 0; j < outputMat.getCols(); j++){
+		thrust::host_vector<float>::iterator iter = thrust::max_element(h_vec.begin() + j*inputDim, h_vec.begin() + (j+1)*inputDim);
+		unsigned int position = iter - h_vec.begin() - j*inputDim;
+		result.push_back(position);
+	}
+
+	/*
 	float* h_data = new float [outputMat.size()];
 	cudaMemcpy(h_data ,outputMat.getData(), outputMat.size() * sizeof(float), cudaMemcpyDeviceToHost);
 
@@ -268,6 +352,7 @@ void computeLabel(vector<size_t>& result,const mat& outputMat){
 		result.push_back(idx);
 	}
 	delete [] h_data;
+	*/
 }
 
 float computeErrRate(const vector<size_t>& ans, const vector<size_t>& output){
