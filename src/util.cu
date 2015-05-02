@@ -1,5 +1,14 @@
 #include "mynngen.h"
 #include <device_matrix.h>
+#include <device_arithmetic.h>
+#include <device_math.h>
+#include <thrust/device_vector.h>
+#include <thrust/functional.h>
+#include <thrust/host_vector.h>
+#include <thrust/device_vector.h>
+#include <thrust/fill.h>
+#include <thrust/copy.h>
+#include <thrust/device_ptr.h>
 #include <string>
 #include <vector>
 #include <cassert>
@@ -30,14 +39,15 @@ void rand_norm(mat& w,myNnGen& ran){
 
 void pushOne(mat& in){
 	mat tmp(~in);
-	float* h_data=new float[(in.getRows()+1)*in.getCols()];
-	CCE(cudaMemcpy(h_data,tmp.getData(),tmp.size()*sizeof(float),cudaMemcpyDeviceToHost));
-	for(size_t t=0;t<tmp.getRows();++t)
-		h_data[tmp.size()+t]=1;
+	thrust::device_vector<float> dvec(tmp.size()+tmp.getRows());
+	thrust::device_ptr<float> mat_ptr(tmp.getData());
+	thrust::copy(mat_ptr,mat_ptr+tmp.size(),dvec.begin());
+	thrust::device_ptr<float> vec_ptr=dvec.data();
+	thrust::fill(vec_ptr+tmp.size()+1,vec_ptr+tmp.size()+1+tmp.getRows(),1);
 	tmp.resize(tmp.getRows(),tmp.getCols()+1);
-	CCE(cudaMemcpy(tmp.getData(),h_data,tmp.size()*sizeof(float),cudaMemcpyHostToDevice));
+	thrust::device_ptr<float> mat_ptr2(tmp.getData());
+	thrust::copy(dvec.begin(),dvec.end(),mat_ptr2);
 	in = ~tmp;
-	delete [] h_data;
 }
 
 void getBias(mat& out,const mat& w){

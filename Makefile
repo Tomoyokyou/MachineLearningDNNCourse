@@ -2,21 +2,21 @@ CC=gcc
 CXX=g++
 CPPFLAGS=-g -O2 -std=c++11 $(INCLUDE)
 NVCC=nvcc -arch=sm_21 -w
-
 CUDA_DIR=/usr/local/cuda/
 
 EXECUTABLES=train
 LIBCUMATDIR=tool/libcumatrix/
 CUMATOBJ=$(LIBCUMATDIR)obj/device_matrix.o $(LIBCUMATDIR)obj/cuda_memory_manager.o
-HEADEROBJ=obj/util.o obj/transforms.o obj/dnn.o obj/dataset.o obj/datasetJason.o obj/parser.o
+HEADEROBJ=obj/util.o obj/transforms.o obj/dnn.o obj/dataset.o obj/parser.o
 
+LIBS=$(LIBCUMATDIR)lib/libcumatrix.a
 # +==============================+
 # +======== Phony Rules =========+
 # +==============================+
 
 .PHONY: debug all clean 
 
-LIBS=$(LIBCUMATDIR)lib/libcumatrix.a
+all:DIR $(EXECUTABLES)
 
 $(LIBCUMATDIR)lib/libcumatrix.a:
 	@echo "Missing library file, trying to fix it in tool/libcumatrix"
@@ -34,24 +34,16 @@ INCLUDE= -I include/\
 
 LD_LIBRARY=-L$(CUDA_DIR)lib64 -L$(LIBCUMATDIR)lib
 LIBRARY=-lcuda -lcublas -lcudart -lcumatrix
-TARGET=test.app
 
 DIR:
 	@echo "checking object and executable directory..."
 	@mkdir -p obj
 	@mkdir -p bin
 
-all:DIR $(EXECUTABLES)
-
-larry: $(HEADEROBJ) example/temp.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
-
 train:  $(HEADEROBJ) example/train.cpp
 	@echo "compiling train.app for DNN Training"
 	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
-#Pan: $(HEADEROBJ) makeFrameDatasetTest.cpp 
-#	$(CXX) $(CFLAGS) $(INCLUDE) -o $(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
 
 CSV: $(HEADEROBJ) CSVTest.cpp 
 	@echo "compiling CSV2.app for generating CSV format testing results"
@@ -60,9 +52,6 @@ CSV: $(HEADEROBJ) CSVTest.cpp
 clean:
 	@echo "All objects and executables removed"
 	@rm -f $(EXECUTABLES) obj/* ./*.app
-
-jason: $(HEADEROBJ) jasonTest.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 ctags:
 	@rm -f src/tags tags
