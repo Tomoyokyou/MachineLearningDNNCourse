@@ -19,7 +19,14 @@ int main(){
 	mat batch;
 	vector<size_t> bLabel;
 	for(int i = 0; i < 230; i ++){
-		validData.getRecogData(1000, batch, bLabel);
+		validData.getRecogData(10, batch, bLabel);
+		if (i = 10){
+			batch.print();
+			for (int j= 0; j < bLabel.size(); j++){
+				cout <<bLabel[j] << " ";
+			}
+			cout <<endl;
+		}
 	}
 
 	

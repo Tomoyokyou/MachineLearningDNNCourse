@@ -497,7 +497,7 @@ void   Dataset::printLabelMap(map<string, int> Map){
 }
 */
 
-void Dataset::getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel){
+bool Dataset::getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel){
 	// use shuffled trainX to get batch sequentially
 	float** batchFtre = new float*[batchSize];
 	if (_recogCtr + batchSize > _dataNum ){
@@ -517,7 +517,9 @@ void Dataset::getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel
 	batchFtre = NULL;
 	if (_recogCtr == _dataNum ){
 		_recogCtr = 0;
+		return false;
 	}
+	return true;
 }
 void Dataset::getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom){
 	// use shuffled trainX to get batch sequentially
