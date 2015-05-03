@@ -10,14 +10,13 @@
 
 using namespace std;
 
-void myUsage(){cerr<<"$cmd [inputfile] [testfile] [labelfile] --outName [] \n\t options: \n\t--phonenum [] --rate [] --segment [] --batchsize [] --maxEpoch [] --momentum [] --decay [] \n\t--load [] --dim [indim-hidnum1-hidnum2-outdim] --range/variance []"<<endl;}
+void myUsage(){cerr<<"$cmd [inputfile] [testfile] --outName [] \n options: \n\t--phonenum [] --rate [] --segment [] --batchsize [] --maxEpoch [] --momentum [] --decay [] \n\t--load [] --dim [indim-hidnum1-hidnum2-outdim] --range/variance []"<<endl;}
 
 int main(int argc,char** argv){
 	srand((unsigned)time(NULL));
 	PARSER p;
 	p.addMust("trainFilename",false);
 	p.addMust("testFilename",false);
-	p.addMust("labelFilename",false);
 	p.addOption("--rate",true);
 	p.addOption("--segment",true);
 	p.addOption("--batchsize",true);
@@ -39,7 +38,6 @@ int main(int argc,char** argv){
 	}
 	p.getString("trainfilename",trainF);
 	p.getString("testfilename",testF);
-	p.getString("labelFilename",labelF);
 	if(!p.getNum("--rate",rate)){rate=0.1;}
 	if(!p.getNum("--segment",segment)){segment=0.8;}
 	if(!p.getNum("--batchsize",b_size)){b_size=128;}
@@ -52,16 +50,11 @@ int main(int argc,char** argv){
 	if(!p.getNum("--range",var)){var=1;_inittype=UNIFORM;}
 	if(!p.getString("--dim",dims)){cerr<<"wrong hidden layer dimensions";return 1;}
 	p.print();
-	//Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
 	Dataset allData(trainF.c_str());
-	//Dataset trainData;
-	//Dataset testData;
-	//dataset.dataSegment(0.8, trainData, testData);
 	
 	if(p.getString("--load",loadF)){
 		DNN nnload;
 		if(nnload.load(loadF)){
-		//nnload.setDataset(&dataset);
 		nnload.setLearningRate(rate);
 		nnload.setMomentum(momentum);
 		nnload.train(allData,b_size,m_e,0.8,decay);
