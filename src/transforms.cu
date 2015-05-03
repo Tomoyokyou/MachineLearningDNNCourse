@@ -18,6 +18,7 @@ using namespace ext;
 
 typedef device_matrix<float> mat;
 /////////////helper functions//////////////////////
+
 template<typename T>
 struct linear_index_to_row_index : public thrust::unary_function<T,T>
 {
@@ -131,23 +132,6 @@ void Transforms::print(ofstream& out){
 	out << endl;
 	delete [] h_data;
 }
-void Transforms::dump(ofstream& core){
-	core<<"<input>"<<endl;
-	float* h_data = new float[_i.size()];
-	CCE(cudaMemcpy(h_data,_i.getData(),_i.size() * sizeof(float),cudaMemcpyDeviceToHost));
-	for(size_t t=0;t<_i.getRows();++t){
-		for(size_t k=0;k<_i.getCols();++k){
-			core<<" "<<h_data[_i.getRows()*k+t];
-			}
-			core<<endl; 
-		}
-	core<<endl;
-	core<<"weight:"<<endl;
-	print(core);
-	core<<"previout weight change:"<<endl;
-	print(core);
-	core<<endl;
-}
 ///////////////////////////////
 /////////SIGMOID///////////////
 
@@ -171,13 +155,15 @@ void Sigmoid::backPropagate(mat& out,const mat& delta, float rate,float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	gemm(withoutBias,delta,out,(float)1.0,(float)0.0,true,false);
-	out &= _i & (float)1.0-_i;
+	//mat one(_i.getRows(),_i.getCols(),1);
+	out = _i & ((float)1.0-_i) & (~withoutBias * delta);   // this part need tesing
 	// update weight
 	mat _inp(_i);
 	pushOne(_inp);
 	_pw= delta * ~_inp + _pw * momentum;
-	_w -= _pw * (rate/(float)_i.getCols());
+	rate/=(float)_i.getCols();
+	_w -= _pw * rate;
+	//gemm(delta,_inp,_w,(float)-1.0*rate,(float)1.0,false,true);
 }
 void Sigmoid::write(ofstream& out){
 	out<<"<sigmoid> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;
@@ -200,7 +186,7 @@ void Softmax::forward(mat& out,const mat& in,bool train){
 	pushOne(inp);
 	mat z=~(_w * inp);
 	substractMaxPerRow(z);
-	z=~z;
+	z=~z; // transpose to column vectors
 	mat p(z.getRows(), z.getCols());
 	
 	thrust::device_ptr<float> zPtr(z.getData());
@@ -222,13 +208,16 @@ void Softmax::backPropagate(mat& out,const mat& delta,float rate, float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	gemm(withoutBias,delta,out,(float)1.0,(float)0.0,true,false);
-	out &= _i & (float)1.0-_i ;
+	//mat one(_i.getRows(),_i.getCols(),1);
+	out = _i & ((float)1.0-_i) & (~withoutBias * delta);   // this part need tesing
 	//update weight
 	mat inp(_i);
 	pushOne(inp);	
 	_pw=delta * ~inp + _pw * momentum;
-	_w-= _pw * (rate/(float)_i.getCols());
+	rate/=(float)_i.getCols();
+	_w-= _pw * rate;
+	//gemm(delta,inp,_w,(float)-1.0*rate,(float)1.0,false,true);
+	
 }
 void Softmax::write(ofstream& out){
 	out<<"<softmax> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;

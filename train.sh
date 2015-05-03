@@ -29,38 +29,15 @@ mkdir -p model
 # *********TRAINING FROM SCRATCH***********
 # *****************************************
 
-./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
---inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
+./bin/train.app ${TRAIN} ${TEST} ${LABEL} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
 --momentum 0.9 --outName model/out.mdl --decay ${DECAY} --variance 1.0 --dim ${DIM}
 
 # ******************************************
 # * THIS PART IS USED FOR LOADING DNN MODEL*
 # ****************************************** 
 
-#./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
-#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
+#./bin/train.app ${TRAIN} ${TEST} ${LABEL} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
 #--momentum 0.6 --outName bug.mdl --decay ${DECAY} --dim ${DIM} --load model/dump.mdl
 
-#./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
-#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
-#--momentum 0.9 --outName ${OUTMODEL} --decay ${DECAY} --range 1.5 --dim ${DIM} --load best.mdl
-
-#mkdir -p ${MODELDIR}
-#for x in $UNIRANGE
-#do
-#echo "calling momentum $x ..."
-#./train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
-#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
-#--momentum 0.9 --load ${INITMODEL} --outName ${MODELDIR}/uni${x}.mdl --decay ${DECAY} --range $x | tee ${MODELDIR}/uni${x}.log
-#done
-
-#mkdir -p /model/decexp
-#for x in $DECAYSET
-#do
-#echo "calling momentum $x ..."
-#./train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
-#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
-#--momentum 0.9 --load ${INITMODEL} --outName /model/decexp/dec${x}.mdl --decay $x | tee /model/decexp/dec${x}.log
-#done
 
 echo "experiment done!"

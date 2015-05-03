@@ -20,7 +20,7 @@ all:DIR $(EXECUTABLES)
 
 $(LIBCUMATDIR)lib/libcumatrix.a:
 	@echo "Missing library file, trying to fix it in tool/libcumatrix"
-	@cd tool/libcumatrix/ ; make ; cd ../..
+	@cd tool/libcumatrix/ ; make clean ; make ; cd ../..
 debug: CPPFLAGS+=-g -DDEBUG 
 
 vpath %.h include/
@@ -57,9 +57,11 @@ clean:
 ctags:
 	@rm -f src/tags tags
 	@echo "Tagging src directory"
-	@cd src; ctags -a *.cpp ../include/*.h; ctags -a *.cu ../include/*.h; cd ..
+	@cd src; ctags -a ./* ../include/*.h ; cd ..
+	@echo "Tagging example directory"
+	@cd example; ctags -a ./* ../include/*.h ../src/* ; cd ..
 	@echo "Tagging main directory"
-	@ctags -a *.cpp src/* ; ctags -a *.cu src/*
+	@ctags -a example/* src/* include/*.h ./*
 	
 # +==============================+
 # +===== Other Phony Target =====+

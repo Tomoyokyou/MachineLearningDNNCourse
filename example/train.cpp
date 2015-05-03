@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void myUsage(){cerr<<"$cmd [inputfile] [testfile] [labelfile] --labeldim [] --phonenum [] --trainnum [] --testnum [] --labelnum [] --inputdim [] --outputdim [] --maxEpoch [] --momentum [] --decay [] --load []"<<endl;}
+void myUsage(){cerr<<"$cmd [inputfile] [testfile] [labelfile] --outName [] \n\t options: \n\t--phonenum [] --rate [] --segment [] --batchsize [] --maxEpoch [] --momentum [] --decay [] \n\t--load [] --dim [indim-hidnum1-hidnum2-outdim] --range/variance []"<<endl;}
 
 int main(int argc,char** argv){
 	srand((unsigned)time(NULL));
@@ -18,13 +18,6 @@ int main(int argc,char** argv){
 	p.addMust("trainFilename",false);
 	p.addMust("testFilename",false);
 	p.addMust("labelFilename",false);
-	p.addOption("--labeldim",true);
-	p.addOption("--phonenum",true);
-	p.addOption("--trainnum",true);
-	p.addOption("--testnum",true);
-	p.addOption("--labelnum",true);
-	p.addOption("--inputdim",true);
-	p.addOption("--outputdim",true);
 	p.addOption("--rate",true);
 	p.addOption("--segment",true);
 	p.addOption("--batchsize",true);
@@ -37,7 +30,7 @@ int main(int argc,char** argv){
 	p.addOption("--range",true);
 	p.addOption("--dim",false);
 	string trainF,testF,labelF,outF,loadF,dims;
-	size_t labdim,phonenum,trainnum,testnum,labelnum,indim,outdim,b_size,m_e;
+	size_t b_size,m_e;
 	float rate,segment,momentum,decay,var;
 	Init _inittype;
 	if(!p.read(argc,argv)){
@@ -47,13 +40,6 @@ int main(int argc,char** argv){
 	p.getString("trainfilename",trainF);
 	p.getString("testfilename",testF);
 	p.getString("labelFilename",labelF);
-	if(!p.getNum("--labeldim",labdim)){return 1;}
-	if(!p.getNum("--phonenum",phonenum)){return 1;}
-	if(!p.getNum("--trainnum",trainnum)){return 1;}
-	if(!p.getNum("--testnum",testnum)){return 1;}
-	if(!p.getNum("--labelnum",labelnum)){return 1;}
-	p.getNum("--inputdim",indim);
-	p.getNum("--outputdim",outdim);
 	if(!p.getNum("--rate",rate)){rate=0.1;}
 	if(!p.getNum("--segment",segment)){segment=0.8;}
 	if(!p.getNum("--batchsize",b_size)){b_size=128;}

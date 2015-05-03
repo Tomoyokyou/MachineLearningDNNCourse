@@ -4,83 +4,183 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
-DNN	src/dnn.cpp	/^DNN::DNN():_pData(NULL), _learningRate(0.001), _method(ALL){}$/;"	f	class:DNN
-DNN	src/dnn.cpp	/^DNN::DNN(Dataset* pData, float learningRate, const vector<size_t>& v, Method method):_pData(pData), _learningRate(learningRate), _method(method){$/;"	f	class:DNN
+ALL	include/dnn.h	/^	ALL, $/;"	e	enum:Method
+BATCH	include/dnn.h	/^	BATCH, $/;"	e	enum:Method
+CC	./Makefile	/^CC=gcc$/;"	m
+CPPFLAGS	./Makefile	/^CPPFLAGS=-g -O2 -std=c++11 $(INCLUDE)$/;"	m
+CUDA_DIR	./Makefile	/^CUDA_DIR=\/usr\/local\/cuda\/$/;"	m
+CUMATOBJ	./Makefile	/^CUMATOBJ=$(LIBCUMATDIR)obj\/device_matrix.o $(LIBCUMATDIR)obj\/cuda_memory_manager.o$/;"	m
+CXX	./Makefile	/^CXX=g++$/;"	m
+DATASET_H_	include/dataset.h	2;"	d
+DNN	include/dnn.h	/^class DNN{$/;"	c
+DNN_H	include/dnn.h	2;"	d
+Dataset	include/dataset.h	/^class Dataset{$/;"	c
 Dataset	src/dataset.cpp	/^Dataset::Dataset(){$/;"	f	class:Dataset
-Dataset	src/dataset.cpp	/^Dataset::Dataset(const Dataset& data){};$/;"	f	class:Dataset
-Dataset	src/dataset.cpp	/^Dataset::Dataset(const char* trainPath, size_t trainDataNum, const char* testPath, size_t testDataNum, const char* labelPath, size_t labelDataNum, size_t labelNum, size_t inputDim, size_t outputDim, size_t phonemeNum){$/;"	f	class:Dataset
-MAX_EPOCH	src/dnn.cpp	12;"	d	file:
-NameFtreMap	src/dataset.cpp	/^typedef map<string, mapData> NameFtreMap;$/;"	t	file:
+Dataset	src/dataset.cpp	/^Dataset::Dataset(const Dataset& d){$/;"	f	class:Dataset
+Dataset	src/dataset.cpp	/^Dataset::Dataset(const char* dataPath){$/;"	f	class:Dataset
+ERROR	include/parser.h	/^        ERROR,$/;"	e	enum:TYPE
+EXECUTABLES	./Makefile	/^EXECUTABLES=train$/;"	m
+HEADEROBJ	./Makefile	/^HEADEROBJ=obj\/util.o obj\/transforms.o obj\/dnn.o obj\/dataset.o obj\/parser.o$/;"	m
+HOST_MATRIX_H	include/host_matrix.h	2;"	d
+INCLUDE	./Makefile	/^INCLUDE= -I include\/\\$/;"	m
+Init	include/dnn.h	/^enum Init{$/;"	g
+LABEL_NUM	include/dataset.h	10;"	d
+LD_LIBRARY	./Makefile	/^LD_LIBRARY=-L$(CUDA_DIR)lib64 -L$(LIBCUMATDIR)lib$/;"	m
+LIBCUMATDIR	./Makefile	/^LIBCUMATDIR=tool\/libcumatrix\/$/;"	m
+LIBRARY	./Makefile	/^LIBRARY=-lcuda -lcublas -lcudart -lcumatrix$/;"	m
+LIBS	./Makefile	/^LIBS=$(LIBCUMATDIR)lib\/libcumatrix.a$/;"	m
+MUST	include/parser.h	/^        MUST,$/;"	e	enum:TYPE
+MUSTNUM	include/parser.h	/^        MUSTNUM,$/;"	e	enum:TYPE
+MYNNGEN_H	include/mynngen.h	2;"	d
+Method	include/dnn.h	/^enum Method{$/;"	g
+NONE	include/parser.h	/^        NONE,$/;"	e	enum:TYPE
+NORMAL	include/dnn.h	/^	NORMAL,$/;"	e	enum:Init
+NVCC	./Makefile	/^NVCC=nvcc -arch=sm_21 -w$/;"	m
+ONE	include/dnn.h	/^	ONE$/;"	e	enum:Method
+OPTION	include/parser.h	/^        OPTION,$/;"	e	enum:TYPE
+OPTIONNUM	include/parser.h	/^        OPTIONNUM,$/;"	e	enum:TYPE
+OUTPUT_NUM	include/dataset.h	11;"	d
+PARSER	include/parser.h	/^class PARSER{$/;"	c
 PARSER	src/parser.cpp	/^PARSER::PARSER(){$/;"	f	class:PARSER
 PARSER	src/parser.cpp	/^PARSER::PARSER(const PARSER& p){$/;"	f	class:PARSER
+PARSER_H	include/parser.h	2;"	d
+RBM	include/dnn.h	/^	RBM,$/;"	e	enum:Init
+Sigmoid	include/transforms.h	/^class Sigmoid : public Transforms{$/;"	c
+Softmax	include/transforms.h	/^class Softmax : public Transforms{$/;"	c
+TRANSFORMS_H	include/transforms.h	2;"	d
+TYPE	include/parser.h	/^enum TYPE{$/;"	g
+Transforms	include/transforms.h	/^class Transforms{$/;"	c
+Transpose	include/host_matrix.h	/^		Transpose(const host_matrix<T>& m): _m(m){}$/;"	f	class:host_matrix::Transpose
+Transpose	include/host_matrix.h	/^	class Transpose {$/;"	c	class:host_matrix
+UNIFORM	include/dnn.h	/^	UNIFORM,$/;"	e	enum:Init
+UTIL_H	include/util.h	2;"	d
+_To39PhonemeMap	include/dataset.h	/^	map<string, string> _To39PhonemeMap; \/\/Map the output to 39 dimension$/;"	m	class:Dataset
+_batchCtr	include/dataset.h	/^	long int _batchCtr;	$/;"	m	class:Dataset
+_cols	include/host_matrix.h	/^	size_t _cols;$/;"	m	class:host_matrix
+_data	include/dataset.h	/^	float** _data;$/;"	m	class:Dataset
+_data	include/host_matrix.h	/^	T* _data;$/;"	m	class:host_matrix
+_dataNum	include/dataset.h	/^	size_t _dataNum;$/;"	m	class:Dataset
+_dis	include/mynngen.h	/^		normal_distribution<float>* _dis;$/;"	m	class:myNnGen
+_featureDim	include/dataset.h	/^	size_t _featureDim; \/\/input Dim : 39 or 69$/;"	m	class:Dataset
+_frameRange	include/dataset.h	/^	int _frameRange; \/\/Used for frame ??$/;"	m	class:Dataset
+_ggen	include/mynngen.h	/^		mt19937 _ggen;$/;"	m	class:myNnGen
+_i	include/transforms.h	/^		mat _i;$/;"	m	class:Transforms
+_isLabeled	include/dataset.h	/^	bool _isLabeled;$/;"	m	class:Dataset
+_label	include/dataset.h	/^	int* _label; \/\/ output phoneme changed to integer$/;"	m	class:Dataset
+_labelMap	include/dataset.h	/^	map<string, int> _labelMap; \/\/Map phoneme to int$/;"	m	class:Dataset
+_labelNum	include/dataset.h	/^	size_t _labelNum;$/;"	m	class:Dataset
+_learningRate	include/dnn.h	/^	float _learningRate;$/;"	m	class:DNN
+_m	include/host_matrix.h	/^		const host_matrix<T> _m;$/;"	m	class:host_matrix::Transpose
+_m	include/mynngen.h	/^		float _m;$/;"	m	class:myNnGen
+_method	include/dnn.h	/^	Method _method;$/;"	m	class:DNN
+_momentum	include/dnn.h	/^	float _momentum;$/;"	m	class:DNN
+_mustHave	include/parser.h	/^    vector<string> _mustHave;$/;"	m	class:PARSER
+_mustHaveNum	include/parser.h	/^    vector<string> _mustHaveNum;$/;"	m	class:PARSER
+_mustList	include/parser.h	/^    vector<string> _mustList;$/;"	m	class:PARSER
+_name	include/dataset.h	/^	string* _name;$/;"	m	class:Dataset
+_notOrig	include/dataset.h	/^	bool _notOrig;$/;"	m	class:Dataset
+_numMap	include/parser.h	/^    map<string,float> _numMap;$/;"	m	class:PARSER
+_options	include/parser.h	/^    vector<string> _options;$/;"	m	class:PARSER
+_optionsNum	include/parser.h	/^    vector<string> _optionsNum;$/;"	m	class:PARSER
+_pw	include/transforms.h	/^		mat _pw;$/;"	m	class:Transforms
+_recogCtr	include/dataset.h	/^	int _recogCtr;$/;"	m	class:Dataset
+_rows	include/host_matrix.h	/^	size_t _rows;$/;"	m	class:host_matrix
+_stringMap	include/parser.h	/^    map<string,string> _stringMap;$/;"	m	class:PARSER
+_transforms	include/dnn.h	/^	vector<Transforms*> _transforms;$/;"	m	class:DNN
+_v	include/mynngen.h	/^		float _v;$/;"	m	class:myNnGen
+_validateAccuracy	include/dnn.h	/^	vector<float> _validateAccuracy;$/;"	m	class:DNN
+_w	include/transforms.h	/^		mat _w;$/;"	m	class:Transforms
 addMust	src/parser.cpp	/^void PARSER::addMust(string name,bool isNum){$/;"	f	class:PARSER
 addOption	src/parser.cpp	/^void PARSER::addOption(string name,bool isNum){$/;"	f	class:PARSER
-backPropagate	src/dnn.cpp	/^void DNN::backPropagate(const mat& deltaMat, float learningRate){$/;"	f	class:DNN
-computeErrRate	src/dnn.cpp	/^float computeErrRate(const vector<size_t>& ans, const vector<size_t>& output){$/;"	f
-computeLabel	src/dnn.cpp	/^void computeLabel(vector<size_t>& result,const mat& outputMat){$/;"	f
-dataSegment	src/datasetJason.cpp	/^void Dataset::dataSegment( float trainProp ){$/;"	f	class:Dataset
-feedForward	src/dnn.cpp	/^void DNN::feedForward(mat& outputMat, const mat& inputMat, bool train){$/;"	f	class:DNN
+dataSegment	src/dataset.cpp	/^void Dataset::dataSegment( Dataset& trainData, Dataset& validData, float trainProp){$/;"	f	class:Dataset
+fillwith	include/host_matrix.h	/^void host_matrix<T>::fillwith(T val){$/;"	f	class:host_matrix
 find	src/parser.cpp	/^TYPE PARSER::find(string name){$/;"	f	class:PARSER
-getBatch	src/datasetJason.cpp	/^void Dataset::getBatch(int batchSize, mat& batch, mat& batchLabel){$/;"	f	class:Dataset
-getInputDim	src/dataset.cpp	/^size_t Dataset::getInputDim(){ return _featureDimension; }$/;"	f	class:Dataset
-getInputDimension	src/dnn.cpp	/^size_t DNN::getInputDimension(){$/;"	f	class:DNN
-getLabelMap	src/dataset.cpp	/^map<string, int> Dataset::getLabelMap(){return _labelMap;}$/;"	f	class:Dataset
+getBatch	src/dataset.cpp	/^void Dataset::getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom){$/;"	f	class:Dataset
+getCols	include/host_matrix.h	/^	size_t getCols() const {return _cols;}$/;"	f	class:host_matrix
+getData	include/host_matrix.h	/^	T* getData() const {return _data;}$/;"	f	class:host_matrix
+getData	src/dataset.cpp	/^mat Dataset::getData(){$/;"	f	class:Dataset
+getDataNum	src/dataset.cpp	/^size_t Dataset::getDataNum(){ return _dataNum; }$/;"	f	class:Dataset
+getFeatureDim	src/dataset.cpp	/^size_t Dataset::getFeatureDim(){ return _featureDim; }$/;"	f	class:Dataset
+getLabel_mat	src/dataset.cpp	/^mat Dataset::getLabel_mat(){$/;"	f	class:Dataset
+getLabel_vec	src/dataset.cpp	/^vector<size_t> Dataset::getLabel_vec(){$/;"	f	class:Dataset
 getNum	src/parser.cpp	/^bool PARSER::getNum(string name,float& num){$/;"	f	class:PARSER
 getNum	src/parser.cpp	/^bool PARSER::getNum(string name,int& num){$/;"	f	class:PARSER
 getNum	src/parser.cpp	/^bool PARSER::getNum(string name,size_t& num){$/;"	f	class:PARSER
-getNumLayers	src/dnn.cpp	/^size_t DNN::getNumLayers(){$/;"	f	class:DNN
-getNumOfLabel	src/dataset.cpp	/^size_t Dataset::getNumOfLabel(){return _numOfLabel;}$/;"	f	class:Dataset
-getNumOfPhoneme	src/dataset.cpp	/^size_t Dataset::getNumOfPhoneme(){return _numOfPhoneme;}$/;"	f	class:Dataset
-getNumOfTestData	src/dataset.cpp	/^size_t Dataset::getNumOfTestData(){return _numOfTestData;}$/;"	f	class:Dataset
-getNumOfTrainData	src/dataset.cpp	/^size_t Dataset::getNumOfTrainData(){ return _numOfTrainData; }$/;"	f	class:Dataset
-getOutputDim	src/dataset.cpp	/^size_t Dataset::getOutputDim(){return _stateDimension;}$/;"	f	class:Dataset
-getOutputDimension	src/dnn.cpp	/^size_t DNN::getOutputDimension(){$/;"	f	class:DNN
+getRecogData	src/dataset.cpp	/^bool Dataset::getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel){$/;"	f	class:Dataset
+getRows	include/host_matrix.h	/^	size_t getRows() const {return _rows;}$/;"	f	class:host_matrix
 getString	src/parser.cpp	/^bool PARSER::getString(string name,string& str){$/;"	f	class:PARSER
-getTestDataMatrix	src/dataset.cpp	/^float** Dataset::getTestDataMatrix(){return _testDataMatrix;}$/;"	f	class:Dataset
-getTestSet	src/dataset.cpp	/^mat Dataset::getTestSet(){$/;"	f	class:Dataset
-getTo39PhonemeMap	src/dataset.cpp	/^map<string, string> Dataset::getTo39PhonemeMap(){return _To39PhonemeMap;}$/;"	f	class:Dataset
-getTrainDataMatrix	src/dataset.cpp	/^float** Dataset::getTrainDataMatrix(){return _trainDataMatrix;}$/;"	f	class:Dataset
-getTrainSet	src/datasetJason.cpp	/^void Dataset::getTrainSet(int trainSize, mat& trainData, vector<size_t>& trainLabel){$/;"	f	class:Dataset
-getTrainSize	src/dataset.cpp	/^int    Dataset::getTrainSize(){return _trainSize;}$/;"	f	class:Dataset
-getValidSet	src/datasetJason.cpp	/^void Dataset::getValidSet(int validSize, mat& validData, vector<size_t>& validLabel){$/;"	f	class:Dataset
-getValidSize	src/dataset.cpp	/^int    Dataset::getValidSize(){return _validSize;}$/;"	f	class:Dataset
-inputFeature	src/dataset.cpp	/^	float* inputFeature;$/;"	m	struct:mapData	file:
-inputFtreToMat	src/datasetJason.cpp	/^mat Dataset::inputFtreToMat(float** input, int r, int c){$/;"	f	class:Dataset
+host_geam	include/host_matrix.h	/^void host_geam(const host_matrix<T>& A,const host_matrix<T>& B,host_matrix<T>& C,T alpha=1.0,T beta= 1.0,bool transA=false, bool transB=false){$/;"	f
+host_gemm	include/host_matrix.h	/^void host_gemm(const host_matrix<T>& A,const host_matrix<T>& B, host_matrix<T>& C, T alpha = 1.0, T beta=0.0, bool transA=false, bool transB=false){$/;"	f
+host_matrix	include/host_matrix.h	/^class host_matrix{$/;"	c
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(){$/;"	f	class:host_matrix
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(T* data,size_t r,size_t c){$/;"	f	class:host_matrix
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(const Transpose& src){$/;"	f	class:host_matrix
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(const host_matrix<T>& src){$/;"	f	class:host_matrix
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(size_t r,size_t c){$/;"	f	class:host_matrix
+host_matrix	include/host_matrix.h	/^host_matrix<T>::host_matrix(size_t r,size_t c,T value){$/;"	f	class:host_matrix
+inputFtreToMat	src/dataset.cpp	/^mat Dataset::inputFtreToMat(float** input, int r, int c){$/;"	f	class:Dataset
+isLabeled	include/dataset.h	/^    bool  isLabeled( ){ return _isLabeled; }	$/;"	f	class:Dataset
 isNum	src/parser.cpp	/^bool PARSER::isNum(string str){$/;"	f	class:PARSER
-load	src/dnn.cpp	/^void DNN::load(const string& fn){$/;"	f	class:DNN
-loadTo39PhonemeMap	src/dataset.cpp	/^void Dataset::loadTo39PhonemeMap(const char* mapFilePath){$/;"	f	class:Dataset
-main	jasonTest.cpp	/^int main(){$/;"	f
-main	temp.cpp	/^int main(int argc, char** argv){$/;"	f
-main	testPredictOutput.cpp	/^int main(int argc, char**argv){$/;"	f
-main	train.cpp	/^int main(int argc,char** argv){$/;"	f
-mapData	src/dataset.cpp	/^struct mapData {$/;"	s	file:
-mat	jasonTest.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-mat	src/datasetJason.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-mat	src/dnn.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-mat	src/nnTrain.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-mat	temp.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-mat	testPredictOutput.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
-myUsage	train.cpp	/^void myUsage(){cerr<<"$cmd [inputfile] [testfile] [labelfile] --labeldim [] --phonenum [] --trainnum [] --testnum [] --labelnum [] --inputdim [] --outputdim [] --maxEpoch []"<<endl;}$/;"	f
-nnTrain	src/nnTrain.cpp	/^DNN nnTrain( Dataset* dataPtr, $/;"	f
-outputNumtoBin	src/datasetJason.cpp	/^mat Dataset::outputNumtoBin(int* outputVector, int vectorSize)$/;"	f	class:Dataset
+main	example/debugData.cpp	/^int main(){$/;"	f
+main	example/train.cpp	/^int main(int argc,char** argv){$/;"	f
+mat	include/dataset.h	/^typedef device_matrix<float> mat;$/;"	t
+mat	include/dnn.h	/^typedef device_matrix<float> mat;$/;"	t
+mat	include/transforms.h	/^typedef device_matrix<float> mat;$/;"	t
+mat	include/util.h	/^typedef device_matrix<float> mat;$/;"	t
+mat	src/dataset.cpp	/^typedef device_matrix<float> mat;$/;"	t	file:
+myNnGen	include/mynngen.h	/^		myNnGen(){$/;"	f	class:myNnGen
+myNnGen	include/mynngen.h	/^		myNnGen(float mean,float var){$/;"	f	class:myNnGen
+myNnGen	include/mynngen.h	/^class myNnGen{$/;"	c
+myUsage	example/train.cpp	/^void myUsage(){cerr<<"$cmd [inputfile] [testfile] [labelfile] --outName [] \\n\\t options: \\n\\t--phonenum [] --rate [] --segment [] --batchsize [] --maxEpoch [] --momentum [] --decay [] \\n\\t--load [] --dim [indim-hidnum1-hidnum2-outdim] --range\/variance []"<<endl;}$/;"	f
+operator &	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator & (const host_matrix<T>& rhs) const{$/;"	f	class:host_matrix
+operator &=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator &= (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator ()	include/mynngen.h	/^		float operator ()(){$/;"	f	class:myNnGen
+operator *	include/host_matrix.h	/^		host_matrix<T> operator * (const Transpose rhs) {$/;"	f	class:host_matrix::Transpose
+operator *	include/host_matrix.h	/^		host_matrix<T> operator * (const host_matrix<T>& rhs) {$/;"	f	class:host_matrix::Transpose
+operator *	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator * (T val) const{$/;"	f	class:host_matrix
+operator *	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator * (const host_matrix<T>& rhs) const{$/;"	f	class:host_matrix
+operator *	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator * (const typename host_matrix::Transpose& rhs) const{$/;"	f	class:host_matrix
+operator *	include/host_matrix.h	/^host_matrix<T> operator * (T val, const host_matrix<T>& m){$/;"	f
+operator *=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator *= (T val){$/;"	f	class:host_matrix
+operator *=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator *= (const Transpose& rhs){$/;"	f	class:host_matrix
+operator *=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator *= (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator +	include/host_matrix.h	/^		host_matrix<T> operator + (const host_matrix<T>& rhs) {$/;"	f	class:host_matrix::Transpose
+operator +	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator + (T val) const{$/;"	f	class:host_matrix
+operator +	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator + (const host_matrix<T>& rhs) const{$/;"	f	class:host_matrix
+operator +	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator + (const typename host_matrix<T>::Transpose& rhs) const{$/;"	f	class:host_matrix
+operator +	include/host_matrix.h	/^host_matrix<T> operator + (T val, const host_matrix<T>& m){$/;"	f
+operator +=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator += (T val){$/;"	f	class:host_matrix
+operator +=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator += (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator +=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator += (const typename host_matrix<T>::Transpose& rhs){$/;"	f	class:host_matrix
+operator -	include/host_matrix.h	/^		host_matrix<T> operator - (const host_matrix<T>& rhs) {$/;"	f	class:host_matrix::Transpose
+operator -	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator - (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator -	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator - (const typename host_matrix<T>::Transpose& rhs) const{$/;"	f	class:host_matrix
+operator -	include/host_matrix.h	/^host_matrix<T> operator - (T val, const host_matrix<T>& m){$/;"	f
+operator -	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator - (T val) const{$/;"	f	class:host_matrix
+operator -=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator -= (T val){$/;"	f	class:host_matrix
+operator -=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator -= (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator -=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator -= (const typename host_matrix<T>::Transpose& rhs){$/;"	f	class:host_matrix
+operator /	include/host_matrix.h	/^host_matrix<T> host_matrix<T>::operator \/ (T val) const{$/;"	f	class:host_matrix
+operator /=	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator \/= (T val){$/;"	f	class:host_matrix
+operator =	include/host_matrix.h	/^host_matrix<T>& host_matrix<T>::operator = (const host_matrix<T>& rhs){$/;"	f	class:host_matrix
+operator ~	include/host_matrix.h	/^typename host_matrix<T>::Transpose host_matrix<T>::operator ~ () const{$/;"	f	class:host_matrix
+outputNumtoBin	src/dataset.cpp	/^mat Dataset::outputNumtoBin(int* outputVector, int vectorSize)$/;"	f	class:Dataset
 parseOneOption	src/parser.cpp	/^bool PARSER::parseOneOption(string& str){$/;"	f	class:PARSER
 parseOptions	src/parser.cpp	/^void PARSER::parseOptions(string str,vector<string>& vout){$/;"	f	class:PARSER
-phoneme	src/dataset.cpp	/^	size_t phoneme;$/;"	m	struct:mapData	file:
-predict	src/dnn.cpp	/^void DNN::predict(vector<size_t>& result, const mat& inputMat){$/;"	f	class:DNN
+print	include/host_matrix.h	/^void host_matrix<T>::print(int precision) const{$/;"	f	class:host_matrix
 print	src/parser.cpp	/^void PARSER::print()const{$/;"	f	class:PARSER
-printLabelMap	src/dataset.cpp	/^void   Dataset::printLabelMap(map<string, int> Map){$/;"	f	class:Dataset
-printTo39PhonemeMap	src/dataset.cpp	/^void Dataset::printTo39PhonemeMap(map<string, string> Map){$/;"	f	class:Dataset
-prtPointer	src/datasetJason.cpp	/^void Dataset::prtPointer(float** input, int r, int c){$/;"	f	class:Dataset
 read	src/parser.cpp	/^bool PARSER::read(int argc,char** argv){$/;"	f	class:PARSER
 read	src/parser.cpp	/^bool PARSER::read(string spec){$/;"	f	class:PARSER
-save	src/dnn.cpp	/^void DNN::save(const string& fn){$/;"	f	class:DNN
-saveCSV	src/dataset.cpp	/^void Dataset::saveCSV(vector<size_t> testResult){$/;"	f	class:Dataset
-setDataset	src/dnn.cpp	/^void DNN::setDataset(Dataset* pData){$/;"	f	class:DNN
-setLearningRate	src/dnn.cpp	/^void DNN::setLearningRate(float learningRate){$/;"	f	class:DNN
+reset	include/mynngen.h	/^		void reset(float mean, float var){$/;"	f	class:myNnGen
+resize	include/host_matrix.h	/^void host_matrix<T>::resize(size_t r,size_t c){$/;"	f	class:host_matrix
+resize	include/host_matrix.h	/^void host_matrix<T>::resize(size_t r,size_t c,T val){$/;"	f	class:host_matrix
+seed	include/mynngen.h	/^		void seed(unsigned s){$/;"	f	class:myNnGen
+showParam	include/mynngen.h	/^		void showParam(){$/;"	f	class:myNnGen
+size	include/host_matrix.h	/^	size_t size() const {return _rows*_cols;}$/;"	f	class:host_matrix
 start	src/parser.cpp	/^bool PARSER::start(vector<string> vx){$/;"	f	class:PARSER
 str2Num	src/parser.cpp	/^float PARSER::str2Num(string str){$/;"	f	class:PARSER
 toUpperCase	src/parser.cpp	/^string PARSER::toUpperCase(string str){$/;"	f	class:PARSER
-train	src/dnn.cpp	/^void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNum = 10000, size_t validSetNum = 10000){$/;"	f	class:DNN
-~DNN	src/dnn.cpp	/^DNN::~DNN(){$/;"	f	class:DNN
 ~Dataset	src/dataset.cpp	/^Dataset::~Dataset(){$/;"	f	class:Dataset
 ~PARSER	src/parser.cpp	/^PARSER::~PARSER(){}$/;"	f	class:PARSER
+~host_matrix	include/host_matrix.h	/^host_matrix<T>::~host_matrix(){$/;"	f	class:host_matrix
+~myNnGen	include/mynngen.h	/^		~myNnGen(){delete _dis;}$/;"	f	class:myNnGen

@@ -43,10 +43,6 @@ CUDA_INCLUDE=$(INCLUDE) \
 
 CPPFLAGS= -std=c++0x $(CFLAGS) $(INCLUDE)
 
-#benchmark: $(OBJ) benchmark.cpp
-#	$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ $^ $(LIBRARY_PATH) $(LIBRARY)
-#example1: $(OBJ) example1.cpp
-#	$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ $^ $(LIBRARY_PATH) $(LIBRARY)
 #example2: $(OBJ) matMultTest.cu
 #	$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ $^ $(LIBRARY_PATH) $(LIBRARY)
 # +==============================+

@@ -39,11 +39,10 @@ void rand_norm(mat& w,myNnGen& ran){
 
 void pushOne(mat& in){
 	mat tmp(~in);
-	thrust::device_vector<float> dvec(tmp.size()+tmp.getRows());
+	thrust::device_vector<float> dvec(tmp.size()+tmp.getRows(),1);
 	thrust::device_ptr<float> mat_ptr(tmp.getData());
 	thrust::copy(mat_ptr,mat_ptr+tmp.size(),dvec.begin());
 	thrust::device_ptr<float> vec_ptr=dvec.data();
-	thrust::fill(vec_ptr+tmp.size()+1,vec_ptr+tmp.size()+1+tmp.getRows(),1);
 	tmp.resize(tmp.getRows(),tmp.getCols()+1);
 	thrust::device_ptr<float> mat_ptr2(tmp.getData());
 	thrust::copy(dvec.begin(),dvec.end(),mat_ptr2);
