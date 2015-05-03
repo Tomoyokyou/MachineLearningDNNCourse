@@ -40,6 +40,7 @@ class Dataset{
 	mat getData();	
 	size_t getDataNum();
 	size_t getFeatureDim();
+	bool isLabeled();
 	vector<size_t> getLabel();
 	
 	
@@ -63,6 +64,7 @@ private:
 	int _frameRange; //Used for frame ??
 	long int _batchCtr;	
 	bool _notOrig;
+	bool _isLabeled;
 	mat    outputNumtoBin(int* outputVector, int vectorSize);
 	// change 0~47 to a 48 dim mat
 	mat    inputFtreToMat(float** input, int r, int c);	

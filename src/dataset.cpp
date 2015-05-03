@@ -706,3 +706,6 @@ void Dataset::prtPointer(float** input, int r, int c){
 	return;
 }
 */
+
+bool Dataset::isLabeled(){
+}
