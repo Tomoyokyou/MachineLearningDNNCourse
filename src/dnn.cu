@@ -91,6 +91,27 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 		
 		clock_t rt4 = clock();
 		feedForward(batchOutput, batchData, true);
+		//
+		vector<size_t> debug;
+		float ERR=1.0;
+		predict(debug, trainSet);
+		ERR= computeErrRate(trainLabel,debug);
+		if(ERR==1.0){
+			cout<<"iter"<<num<<" encounter 100\% error"<<endl;
+				cerr<<"ERROR: program overflow..."<<endl;
+				ofstream core("dnn.dump");
+				for(size_t t=0;t<_transforms.size();++t)
+					_transforms.at(t)->dump(core);
+					core<<"\n last output:\n";
+					batchOutput.print(core);
+					core<<"\n";
+					core<<"first gradient "<<endl;
+					mat tempOut(batchOutput-batchLabel);
+					tempOut.print(core);
+					core<<endl;
+			exit(1);
+		}
+		//
 
 		clock_t rt5 = clock();
 		mat lastDelta(batchOutput - batchLabel);
@@ -98,10 +119,10 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 
 		clock_t rt6 = clock();	
 		
-		if( num % 200 == 0 )
+		if( num % 2000 == 0 )
 			_learningRate *= alpha;
 
-		if( num % 500 == 1 ){
+		if( num % 5000 == 1 ){
 
 			clock_t rt7 = clock();
 			vector<size_t> trainResult;

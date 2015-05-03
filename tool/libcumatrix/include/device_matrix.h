@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 /* Includes, cuda */
 #include <cuda_runtime.h>
@@ -174,6 +175,7 @@ public:
   void resize(size_t r, size_t c, T value);
   void reserve(size_t capacity);
   void print(FILE* fid = stdout, int precision = 4, char delimiter = ' ') const;
+  void print(std::ofstream& out) const;
 
   void fillwith(T val);
   size_t size() const { return _rows * _cols; }

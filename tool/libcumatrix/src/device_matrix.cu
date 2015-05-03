@@ -1,5 +1,5 @@
 #include <device_matrix.h>
-
+#include <fstream>
 #include <thrust/transform_reduce.h>
 #include <thrust/functional.h>
 #include <thrust/host_vector.h>
@@ -391,6 +391,22 @@ void device_matrix<T>::print(FILE* fid, int precision, char delimiter) const {
     fprintf(fid, "\n");
   }
 
+  delete [] data;
+}
+template <typename T>
+void device_matrix<T>::print(std::ofstream& out) const {
+
+  if (_rows == 0 || _cols == 0)
+    return;
+
+  T* data = new T[size()];
+  CCE(cudaMemcpy(data, _data, sizeof(T) * size(), cudaMemcpyDeviceToHost));
+
+  for (size_t i=0; i<_rows; ++i) {
+    for (size_t j=0; j<_cols; ++j)
+		out<<" "<<data[j*_rows+i];
+	out<<endl;
+  }
   delete [] data;
 }
 

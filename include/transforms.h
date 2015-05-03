@@ -17,6 +17,7 @@ class Transforms{
 		virtual void write(ofstream& out)=0;
 		size_t getInputDim()const;
 		size_t getOutputDim()const;
+		void dump(ofstream& core);
 	protected:
 		Transforms(const mat& w,const mat& b);
 		Transforms(size_t inputdim, size_t outputdim,float range=1.0);

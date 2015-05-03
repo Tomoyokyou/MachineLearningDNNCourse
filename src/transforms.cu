@@ -128,6 +128,23 @@ void Transforms::print(ofstream& out){
 	out << endl;
 	delete [] h_data;
 }
+void Transforms::dump(ofstream& core){
+	core<<"<input>"<<endl;
+	float* h_data = new float[_i.size()];
+	CCE(cudaMemcpy(h_data,_i.getData(),_i.size() * sizeof(float),cudaMemcpyDeviceToHost));
+	for(size_t t=0;t<_i.getRows();++t){
+		for(size_t k=0;k<_i.getCols();++k){
+			core<<" "<<h_data[_i.getRows()*k+t];
+			}
+			core<<endl; 
+		}
+	core<<endl;
+	core<<"weight:"<<endl;
+	print(core);
+	core<<"previout weight change:"<<endl;
+	print(core);
+	core<<endl;
+}
 ///////////////////////////////
 /////////SIGMOID///////////////
 
