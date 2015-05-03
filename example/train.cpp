@@ -66,15 +66,19 @@ int main(int argc,char** argv){
 	if(!p.getNum("--range",var)){var=1;_inittype=UNIFORM;}
 	if(!p.getString("--dim",dims)){cerr<<"wrong hidden layer dimensions";return 1;}
 	p.print();
-	Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
-	dataset.dataSegment(segment);
+	//Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
+	Dataset allData(trainF.c_str());
+	//Dataset trainData;
+	//Dataset testData;
+	//dataset.dataSegment(0.8, trainData, testData);
+	
 	if(p.getString("--load",loadF)){
 		DNN nnload;
 		if(nnload.load(loadF)){
-		nnload.setDataset(&dataset);
+		//nnload.setDataset(&dataset);
 		nnload.setLearningRate(rate);
 		nnload.setMomentum(momentum);
-		nnload.train(b_size,m_e,10000,10000,decay);
+		nnload.train(allData,b_size,m_e,0.8,decay);
 		nnload.save(outF);
 		}
 		else{	cerr<<"loading file:"<<loadF<<" failed! please check again..."<<endl;return 1;}
@@ -82,8 +86,8 @@ int main(int argc,char** argv){
 	else{
 	vector<size_t>dim;
 	parseDim(dims,dim);
-	DNN dnn(&dataset,rate,momentum,var,_inittype,dim,BATCH);
-	dnn.train(b_size,m_e,10000,10000,decay);
+	DNN dnn(rate,momentum,var,_inittype,dim,BATCH);
+	dnn.train(allData,b_size,m_e,0.8,decay);
 	dnn.save(outF);
 	}
 	cout<<"end of training!";

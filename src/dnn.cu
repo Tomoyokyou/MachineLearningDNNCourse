@@ -15,7 +15,7 @@
 #include <thrust/inner_product.h>
 #include <thrust/extrema.h>
 
-#define MAX_EPOCH 10000000
+#define MAX_EPOCH 1000
 
 using namespace std;
 
@@ -24,8 +24,8 @@ typedef device_matrix<float> mat;
 float computeErrRate(const vector<size_t>& ans, const vector<size_t>& output);
 void computeLabel(vector<size_t>& result,const mat& outputMat);
 
-DNN::DNN():_pData(NULL), _learningRate(0.001),_momentum(0), _method(ALL){}
-DNN::DNN(Dataset* pData, float learningRate,float momentum,float variance,Init init, const vector<size_t>& v, Method method):_pData(pData), _learningRate(learningRate),_momentum(momentum), _method(method){
+DNN::DNN():_learningRate(0.001),_momentum(0), _method(ALL){}
+DNN::DNN(float learningRate, float momentum, float variance,Init init, const vector<size_t>& v, Method method):_learningRate(learningRate), _momentum(momentum), _method(method){
 	int numOfLayers = v.size();
 	switch(init){
 	case NORMAL:
@@ -60,13 +60,26 @@ DNN::~DNN(){
 	}
 }
 
-void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNum = 10000, size_t validSetNum = 10000, float alpha = 0.98){
+void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EPOCH, float trainRatio = 0.8, float alpha = 0.98){
 	//clock_t rt1 = clock();
 
-	mat trainSet;
-	vector<size_t> trainLabel;
-	mat validSet;
+	if(labeledData.isLabeled() == false){
+		cerr << "It is impossible to train unLabeled data.\n";
+		return;
+	}
+
+	Dataset trainData;
+	Dataset validData;
+
+	labeledData.dataSegment(trainData, validData, trainRatio);
+
+	//mat trainSet;
+	//vector<size_t> trainLabel;
+	mat validSet; 
 	vector<size_t> validLabel;
+	//validData.getBatch(10*batchSize, validSet, validLabel, true);
+	validData.getRecogData(100*batchSize, validSet, validLabel);  
+
 	size_t EinRise = 0;
 	float Ein = 1;
 	float pastEin = Ein;
@@ -75,19 +88,23 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 	float pastEout = Eout;
 	float minEout = Eout;
 	
-	_pData->getTrainSet(trainSetNum, trainSet, trainLabel);
-	_pData->getValidSet(validSetNum, validSet, validLabel);
+	//_pData->getTrainSet(trainSetNum, trainSet, trainLabel);
+	//_pData->getValidSet(validSetNum, validSet, validLabel);
 
 	//clock_t rt2 = clock();
 	//cout << "Get train/validate set:" << (rt2-rt1)/CLOCKS_PER_SEC << endl;
 	
+	size_t oneEpoch = trainData.getDataNum()/batchSize;
+	size_t epochCnt = 0;
 	size_t num = 0;
-	for(; num < maxEpoch; num++){
+	for(; epochCnt < maxEpoch; num++){
 		//clock_t rt3 = clock();
 		mat batchData;
 		mat batchLabel;
+
+		trainData.getBatch(batchSize, batchData, batchLabel, true);
 		mat batchOutput;
-		_pData->getBatch(batchSize, batchData, batchLabel);
+		//_pData->getBatch(batchSize, batchData, batchLabel);
 		
 		//clock_t rt4 = clock();
 		feedForward(batchOutput, batchData, true);
@@ -121,19 +138,19 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 
 		//clock_t rt6 = clock();	
 		
-		if( num % 2000 == 0 )
+		if( num % 200 == 0 )
 			_learningRate *= alpha;
 
-		if( num % 5000 == 1 ){
-
+		if( num % oneEpoch == 1 ){
+			epochCnt++;
 			//clock_t rt7 = clock();
-			vector<size_t> trainResult;
+			//vector<size_t> trainResult;
 			vector<size_t> validResult;
-			predict(trainResult, trainSet);
+			//predict(trainResult, trainSet);
 			predict(validResult, validSet);
 
 			//clock_t rt8 = clock();
-			Ein = computeErrRate(trainLabel, trainResult);
+			//Ein = computeErrRate(trainLabel, trainResult);
 			Eout = computeErrRate(validLabel, validResult);
 			
 			//clock_t rt9 = clock();
@@ -148,11 +165,11 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 			//cout << "Compute train/valid err: " << (rt9-rt8)/duration << endl;
 
 
-			pastEin  = Ein;
+			//pastEin  = Ein;
 			pastEout = Eout;
-			if(minEin > Ein){
-				minEin = Ein;
-			}
+			//if(minEin > Ein){
+			//	minEin = Ein;
+			//}
 			if(minEout > Eout){
 				minEout = Eout;
 				cout << "bestMdl: Error at: " << minEout << endl;  
@@ -167,8 +184,10 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 				}
 			}
 			
+
 			cout.precision(4);
-			cout << "Validating error: " << Eout*100 << " %, Training error: " << Ein*100 << " %,  iterations:" << num-1 <<"\n";
+			//cout << "Validating error: " << Eout*100 << " %, Training error: " << Ein*100 << " %,  iterations:" << num-1 <<"\n";
+			cout << "Validating error: " << Eout*100 << " %,  Epoch:" << epochCnt <<"\n";
 		}
 	}
 	cout << "Finished training for " << num << " iterations.\n";
@@ -191,9 +210,9 @@ void DNN::predict(vector<size_t>& result, const mat& inputMat){
 	*/
 }
 
-void DNN::setDataset(Dataset* pData){
-	_pData = pData;
-}
+//void DNN::setDataset(Dataset* pData){
+//	_pData = pData;
+//}
 void DNN::setLearningRate(float learningRate){
 	_learningRate = learningRate;
 }

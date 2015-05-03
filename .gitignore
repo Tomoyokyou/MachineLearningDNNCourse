@@ -38,6 +38,10 @@ src/tags
 *.mdl
 model/*
 
+# Backup .orig file
+*.orig
+./**/*.orig
+
 # Temp and Testing cpp files
 temp.cpp
 *Test.cpp
