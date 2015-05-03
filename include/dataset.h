@@ -48,7 +48,7 @@ class Dataset{
 	//map<string, string> getTo39PhonemeMap();
 	
 	void   getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom);
-	void   getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel);  
+	bool   getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel);  
 	//void   getTrainSet(int trainSize, mat& trainData, vector<size_t>& trainLabel);
 	//void   getValidSet(int validSize, mat& validData, vector<size_t>& validLabel);
 	void   dataSegment( Dataset& trainData, Dataset& validData, float trainProp = 0.8);
