@@ -1,9 +1,12 @@
 DATA=/home/hui/project/model/
+DATA_LARRY=/home/larry/Documents/data/MLDS_HW1_RELEASE_v1/mfcc/
 TYPE=fbank/
-TRAIN=${DATA}train/gender_norm.ark
-TEST=${DATA}test/test_gender_norm.ark
+#TRAIN=${DATA}train/gender_norm.ark
+TRAIN=${DATA_LARRY}train_351.ark
+#TEST=${DATA}test/test_gender_norm.ark
+TEST=${DATA_LARRY}test_351.ark
 LABEL=${DATA}label/label.ark
-INDIM=69
+INDIM=351
 OUTDIM=48
 PHONUM=39
 SIZE=1124823
@@ -17,7 +20,7 @@ DECAY=0.999
 INITMODEL=model/momentExpInit.mdl
 MODELDIR=model/initexp
 UNIRANGE="0.1 0.5 1 2";
-DIM=${INDIM}-128-${OUTDIM}
+DIM=${INDIM}-512-128-${OUTDIM}
 OUTMODEL=model/${DIM}.mdl
 
 mkdir -p model
@@ -37,6 +40,10 @@ mkdir -p model
 #./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
 #--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
 #--momentum 0.6 --outName bug.mdl --decay ${DECAY} --dim ${DIM} --load model/dump.mdl
+
+#./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
+#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
+#--momentum 0.9 --outName ${OUTMODEL} --decay ${DECAY} --range 1.5 --dim ${DIM} --load best.mdl
 
 #mkdir -p ${MODELDIR}
 #for x in $UNIRANGE
