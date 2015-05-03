@@ -1,4 +1,5 @@
 #include "dnn.h"
+#include "util.h"
 #include "dataset.h"
 #include <iostream>
 #include <vector>
@@ -13,7 +14,6 @@
 #include <thrust/device_ptr.h>
 #include <thrust/inner_product.h>
 #include <thrust/extrema.h>
-#include "util.h"
 
 #define MAX_EPOCH 10000000
 
@@ -61,7 +61,7 @@ DNN::~DNN(){
 }
 
 void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNum = 10000, size_t validSetNum = 10000, float alpha = 0.98){
-	clock_t rt1 = clock();
+	//clock_t rt1 = clock();
 
 	mat trainSet;
 	vector<size_t> trainLabel;
@@ -78,45 +78,45 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 	_pData->getTrainSet(trainSetNum, trainSet, trainLabel);
 	_pData->getValidSet(validSetNum, validSet, validLabel);
 
-	clock_t rt2 = clock();
-	cout << "Get train/validate set:" << (rt2-rt1)/CLOCKS_PER_SEC << endl;
+	//clock_t rt2 = clock();
+	//cout << "Get train/validate set:" << (rt2-rt1)/CLOCKS_PER_SEC << endl;
 	
 	size_t num = 0;
 	for(; num < maxEpoch; num++){
-		clock_t rt3 = clock();
+		//clock_t rt3 = clock();
 		mat batchData;
 		mat batchLabel;
 		mat batchOutput;
 		_pData->getBatch(batchSize, batchData, batchLabel);
 		
-		clock_t rt4 = clock();
+		//clock_t rt4 = clock();
 		feedForward(batchOutput, batchData, true);
 
-		clock_t rt5 = clock();
+		//clock_t rt5 = clock();
 		mat lastDelta(batchOutput - batchLabel);
 		backPropagate(lastDelta, _learningRate, _momentum); //momentum
 
-		clock_t rt6 = clock();	
+		//clock_t rt6 = clock();	
 		
 		if( num % 200 == 0 )
 			_learningRate *= alpha;
 
-		if( num % 500 == 1 ){
+		if( num % 1000 == 1 ){
 
-			clock_t rt7 = clock();
+			//clock_t rt7 = clock();
 			vector<size_t> trainResult;
 			vector<size_t> validResult;
 			predict(trainResult, trainSet);
 			predict(validResult, validSet);
 
-			clock_t rt8 = clock();
+			//clock_t rt8 = clock();
 			Ein = computeErrRate(trainLabel, trainResult);
 			Eout = computeErrRate(validLabel, validResult);
 			
-			clock_t rt9 = clock();
+			//clock_t rt9 = clock();
 
 			/*Print debug message here*/
-			double duration = (rt9-rt3);
+			//double duration = (rt9-rt3);
 			//cout << "Per iteration: " << duration/CLOCKS_PER_SEC << " sec\n";
 			//cout << "Get Batch time: " << (rt4-rt3)/duration << endl;
 			//cout << "Feedforward: " << (rt5-rt4)/duration << endl;
@@ -144,7 +144,7 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 				}
 			}
 			
-			cout.precision(5);
+			cout.precision(4);
 			cout << "Validating error: " << Eout*100 << " %, Training error: " << Ein*100 << " %,  iterations:" << num-1 <<"\n";
 		}
 	}
@@ -166,7 +166,6 @@ void DNN::predict(vector<size_t>& result, const mat& inputMat){
 	
 	cout << endl;
 	*/
-	//delete [] h_data;
 }
 
 void DNN::setDataset(Dataset* pData){
@@ -271,6 +270,10 @@ void DNN::feedForward(mat& outputMat, const mat& inputMat, bool train){
 	}
 }
 
+void DNN::getHiddenForward(mat& outputMat, const mat& inputMat){
+	_transforms.at(0)->forward(outputMat, inputMat, false);
+}
+
 //The delta of last layer = _sigoutdiff & grad(errorFunc())
 void DNN::backPropagate(const mat& deltaMat, float learningRate, float momentum){
 	mat tempMat = deltaMat;
@@ -282,30 +285,6 @@ void DNN::backPropagate(const mat& deltaMat, float learningRate, float momentum)
 }
 
 //Helper Functions
-/*
-mat posteriorProb2Label(const mat& prob) {
-	assert(prob.getCols() > 1);
-	size_t rows = prob.getRows(), cols = prob.getCols();
-
-	hmat h_prob(prob);
-  	hmat h_labels(1, cols);
-
-  	for (size_t j=0; j<cols; ++j) {
-		float max = -1e10;
-    	size_t maxIdx = 0;
-
-    	for (size_t i=0; i<rows; ++i) {
-      		if (h_prob(i, j) > max) {
-				max = h_prob(i, j);
-				maxIdx = i;
-      		}
-    	}
-    	h_labels[j] = maxIdx;
-  	}
-  return h_labels;
-}
-*/
-
 size_t countDifference(const mat& m1, const mat& m2) {
 	assert(m1.size() == m2.size());
 	

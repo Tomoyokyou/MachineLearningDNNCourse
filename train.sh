@@ -8,22 +8,23 @@ OUTDIM=48
 PHONUM=39
 SIZE=1124823
 TESTNUM=180406
-RATE=0.002
+RATE=0.005
 BSIZE=256
-MAXEPOCH=100000
+MAXEPOCH=1000000
 MOMENTUM="0 0.3 0.6 0.9"
 DECAYSET="1 0.9 0.81 0.72"
-DECAY=1
+DECAY=0.999
 INITMODEL=model/momentExpInit.mdl
 MODELDIR=model/initexp
 UNIRANGE="0.1 0.5 1 2";
 DIM=${INDIM}-128-${OUTDIM}
+OUTMODEL=model/${DIM}.mdl
 
 mkdir -p model
 
 ./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
 --inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
---momentum 0.9 --outName out.mdl --decay ${DECAY} --range 1.5 --dim ${DIM}
+--momentum 0.9 --outName ${OUTMODEL} --decay ${DECAY} --range 1.5 --dim ${DIM}
 
 #mkdir -p ${MODELDIR}
 #for x in $UNIRANGE

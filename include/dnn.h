@@ -29,6 +29,7 @@ public:
 
 	void train(size_t batchSize, size_t maxEpoch, size_t trainSetNum, size_t validSetNum, float alpha);
 	void predict(vector<size_t>& result, const mat& inputMat);
+	void getHiddenForward(mat& outputMat, const mat& inputMat);
 
 	void setDataset(Dataset* pData);
 	void setLearningRate(float learningRate);
