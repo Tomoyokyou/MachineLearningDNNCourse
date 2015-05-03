@@ -71,12 +71,12 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 	Dataset trainData;
 	Dataset validData;
 
-	labeledData.dataSegment(trainRatio, trainData, validData);
+	labeledData.dataSegment(trainData, validData, trainRatio);
 
 	//mat trainSet;
 	//vector<size_t> trainLabel;
 	mat validSet = validData.getData();
-	vector<size_t> validLabel = validData.getLabel();
+	vector<size_t> validLabel = validData.getLabel_vec();
 
 	size_t EinRise = 0;
 	float Ein = 1;

@@ -67,7 +67,7 @@ int main(int argc,char** argv){
 	if(!p.getString("--dim",dims)){cerr<<"wrong hidden layer dimensions";return 1;}
 	p.print();
 	//Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
-	Dataset allData(trainF.c_str(), labelF.c_str());
+	Dataset allData(trainF.c_str());
 	//Dataset trainData;
 	//Dataset testData;
 	//dataset.dataSegment(0.8, trainData, testData);

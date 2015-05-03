@@ -1,10 +1,10 @@
-DATA=/home/hui/project/model/
+DATA=/home/hui/model/
 DATA_LARRY=/home/larry/Documents/data/MLDS_HW1_RELEASE_v1/mfcc/
 TYPE=fbank/
-#TRAIN=${DATA}train/gender_norm.ark
-TRAIN=${DATA_LARRY}train_351.ark
-#TEST=${DATA}test/test_gender_norm.ark
-TEST=${DATA_LARRY}test_351.ark
+TRAIN=${DATA}train/train_gender_norm.svm
+#TRAIN=${DATA_LARRY}train_351.ark
+TEST=${DATA}test/test_gender_norm.svm
+#TEST=${DATA_LARRY}test_351.ark
 LABEL=${DATA}label/label.ark
 INDIM=351
 OUTDIM=48
