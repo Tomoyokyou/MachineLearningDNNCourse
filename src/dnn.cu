@@ -15,7 +15,7 @@
 #include <thrust/inner_product.h>
 #include <thrust/extrema.h>
 
-#define MAX_EPOCH 10000000
+#define MAX_EPOCH 1000
 
 using namespace std;
 
@@ -75,8 +75,10 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 
 	//mat trainSet;
 	//vector<size_t> trainLabel;
-	mat validSet = validData.getData();
-	vector<size_t> validLabel = validData.getLabel_vec();
+	mat validSet; 
+	vector<size_t> validLabel;
+	//validData.getBatch(10*batchSize, validSet, validLabel, true);
+	validData.getRecogData(100*batchSize, validSet, validLabel);  
 
 	size_t EinRise = 0;
 	float Ein = 1;
@@ -92,9 +94,10 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 	//clock_t rt2 = clock();
 	//cout << "Get train/validate set:" << (rt2-rt1)/CLOCKS_PER_SEC << endl;
 	
-	size_t oneEpoch = trainData.getDataNum();
+	size_t oneEpoch = trainData.getDataNum()/batchSize;
+	size_t epochCnt = 0;
 	size_t num = 0;
-	for(; num < maxEpoch; num++){
+	for(; epochCnt < maxEpoch; num++){
 		//clock_t rt3 = clock();
 		mat batchData;
 		mat batchLabel;
@@ -135,11 +138,11 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 
 		//clock_t rt6 = clock();	
 		
-		if( num % 2000 == 0 )
+		if( num % 200 == 0 )
 			_learningRate *= alpha;
 
-		if( num % 5000 == 1 ){
-
+		if( num % oneEpoch == 1 ){
+			epochCnt++;
 			//clock_t rt7 = clock();
 			//vector<size_t> trainResult;
 			vector<size_t> validResult;
@@ -181,9 +184,10 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 				}
 			}
 			
+
 			cout.precision(4);
 			//cout << "Validating error: " << Eout*100 << " %, Training error: " << Ein*100 << " %,  iterations:" << num-1 <<"\n";
-			cout << "Validating error: " << Eout*100 << " %,  iterations:" << num-1 <<"\n";
+			cout << "Validating error: " << Eout*100 << " %,  Epoch:" << epochCnt <<"\n";
 		}
 	}
 	cout << "Finished training for " << num << " iterations.\n";

@@ -5,22 +5,22 @@ TRAIN=${DATA}train/train_gender_norm.svm
 #TRAIN=${DATA_LARRY}train_351.ark
 TEST=${DATA}test/test_gender_norm.svm
 #TEST=${DATA_LARRY}test_351.ark
-LABEL=${DATA}label/label.ark
-INDIM=351
+LABEL=${DATA}label.ark
+INDIM=69
 OUTDIM=48
 PHONUM=39
 SIZE=1124823
 TESTNUM=180406
 RATE=0.005
 BSIZE=256
-MAXEPOCH=10000000
+MAXEPOCH=500
 MOMENTUM="0 0.3 0.6 0.9"
 DECAYSET="1 0.9 0.81 0.72"
 DECAY=0.999
 INITMODEL=model/momentExpInit.mdl
 MODELDIR=model/initexp
 UNIRANGE="0.1 0.5 1 2";
-DIM=${INDIM}-512-128-${OUTDIM}
+DIM=${INDIM}-128-${OUTDIM}
 OUTMODEL=model/${DIM}.mdl
 
 mkdir -p model
