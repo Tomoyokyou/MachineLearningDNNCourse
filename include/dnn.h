@@ -24,14 +24,14 @@ enum Init{
 class DNN{
 public:
 	DNN();
-	DNN(Dataset* pData, float learningRate,float momentum,float variance,Init init, const vector<size_t>& v, Method method);
+	DNN(float learningRate,float momentum,float variance,Init init, const vector<size_t>& v, Method method);
 	~DNN();
 
-	void train(size_t batchSize, size_t maxEpoch, size_t trainSetNum, size_t validSetNum, float alpha);
+	void train(Dataset& labeledData, size_t batchSize, size_t maxEpoch, float trainRation, float alpha);
 	void predict(vector<size_t>& result, const mat& inputMat);
 	void getHiddenForward(mat& outputMat, const mat& inputMat);
 
-	void setDataset(Dataset* pData);
+	//void setDataset(Dataset* pData);
 	void setLearningRate(float learningRate);
 	void setMomentum(float momentum);
 	size_t getInputDimension();
@@ -44,11 +44,12 @@ private:
 	void feedForward(mat& ouputMat, const mat& inputMat, bool train);
 	void backPropagate(const mat& foutMat, float learningRate, float momentum);
 
-	Dataset* _pData;
+	//Dataset* _pData;
 	float _learningRate;
 	float _momentum;
 	Method _method;
 	vector<Transforms*> _transforms;
+	
 	vector<float> _validateAccuracy;
 
 };
