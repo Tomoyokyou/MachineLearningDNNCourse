@@ -66,8 +66,12 @@ int main(int argc,char** argv){
 	if(!p.getNum("--range",var)){var=1;_inittype=UNIFORM;}
 	if(!p.getString("--dim",dims)){cerr<<"wrong hidden layer dimensions";return 1;}
 	p.print();
-	Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
-	dataset.dataSegment(segment);
+	//Dataset dataset = Dataset(trainF.c_str(),trainnum,testF.c_str(),testnum,labelF.c_str(),labelnum,labdim,indim,outdim,phonenum);
+	Dataset allData(trainF.c_str(), labelF.c_str());
+	Dataset trainData;
+	Dataset testData;
+	dataset.dataSegment(0.8, trainData, testData);
+	
 	if(p.getString("--load",loadF)){
 		DNN nnload;
 		if(nnload.load(loadF)){
