@@ -19,9 +19,10 @@ Dataset::Dataset(){
 	_data = NULL;
 	_label = NULL;
 	_notOrig = false;
+	_isLabeled = false;
 }
 
-Dataset::Dataset(const char* dataPath, const char* labelPath){
+Dataset::Dataset(const char* dataPath){
 	_batchCtr = 0;
 	_notOrig = false;
 	_frameRange = 0;
@@ -46,7 +47,9 @@ Dataset::Dataset(const char* dataPath, const char* labelPath){
 	if (s.find("training") != -1){
 		cout << "this is a training file\n";
 		trainFlag = true;
+		_isLabeled = true;
 	}
+	else _isLabeled = false;
 	
 	while( getline(fin, s) ){
 		if (s.find(">") != -1){   // get frame name
@@ -432,12 +435,15 @@ mat Dataset::getData(){
 	cout << "dimension of data: " << _featureDim << "*" << _dataNum << endl;
 	return inputFtreToMat(_data, _featureDim, _dataNum);
 }
-vector<size_t> Dataset::getLabel(){
+vector<size_t> Dataset::getLabel_vec(){
 	vector<size_t> tmp;
 	for (int i = 0; i < _dataNum; i ++){
 		tmp.push_back(_label[i]);
 	}
 	return tmp;
+}
+mat Dataset::getLabel_mat(){
+	return outputNumtoBin(_label, _dataNum);
 }
 size_t Dataset::getDataNum(){ return _dataNum; }
 size_t Dataset::getFeatureDim(){ return _featureDim; }
@@ -608,7 +614,7 @@ void Dataset::getValidSet(int validSize, mat& validData, vector<size_t>& validLa
 
 
 
-void Dataset::dataSegment( float trainProp, Dataset& trainData, Dataset& validData ){
+void Dataset::dataSegment( Dataset& trainData, Dataset& validData, float trainProp){
 	
 	cout << "start data segmenting:\n";
 	cout << "num of data is "<< _dataNum << endl;
@@ -617,6 +623,10 @@ void Dataset::dataSegment( float trainProp, Dataset& trainData, Dataset& validDa
 	validData._dataNum = _dataNum - trainData._dataNum;
 	trainData._featureDim = _featureDim;
 	validData._featureDim = _featureDim;
+	if (_isLabeled == false){
+		cerr << "this file is not labeled, data is not segmented\n";
+		return;
+	}
 
 	trainData._notOrig = true;
 	validData._notOrig = true;

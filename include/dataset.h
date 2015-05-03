@@ -31,7 +31,7 @@ class Dataset{
 	public:
 	Dataset();
 	
-	Dataset(const char* dataPath, const char* labelPath);
+	Dataset(const char* dataPath);
 	
 	//Dataset(Data data, char mode);
 	Dataset(const Dataset& data);
@@ -40,7 +40,8 @@ class Dataset{
 	mat getData();	
 	size_t getDataNum();
 	size_t getFeatureDim();
-	vector<size_t> getLabel();
+	vector<size_t> getLabel_vec();
+	mat getLabel_mat();
 	
 	
 	//map<string, int> getLabelMap();
@@ -48,13 +49,13 @@ class Dataset{
 	void   getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom);
 	//void   getTrainSet(int trainSize, mat& trainData, vector<size_t>& trainLabel);
 	//void   getValidSet(int validSize, mat& validData, vector<size_t>& validLabel);
-	void   dataSegment( float trainProp, Dataset& trainData, Dataset& validData);
+	void   dataSegment( Dataset& trainData, Dataset& validData, float trainProp = 0.8);
 	//void   printLabelMap(map<string, int> labelMap);
 	//void   printTo39PhonemeMap(map<string, string>);
 	//void   prtPointer(float** input, int r, int c);
 	//void   loadTo39PhonemeMap(const char*);
 	//void   saveCSV(vector<size_t> testResult);
-	
+    bool  isLabeled( ){ return _isLabeled; }	
 private:
 	// dataset parameters
 	size_t _featureDim; //input Dim : 39 or 69
@@ -63,6 +64,7 @@ private:
 	int _frameRange; //Used for frame ??
 	long int _batchCtr;	
 	bool _notOrig;
+	bool _isLabeled;
 	mat    outputNumtoBin(int* outputVector, int vectorSize);
 	// change 0~47 to a 48 dim mat
 	mat    inputFtreToMat(float** input, int r, int c);	
