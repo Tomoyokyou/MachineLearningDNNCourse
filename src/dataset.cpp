@@ -15,6 +15,7 @@ Dataset::Dataset(){
 	_labelNum = 0;
 	_frameRange = 0;
 	_batchCtr = 0;
+	_recogCtr = 0;
 	_name = NULL;
 	_data = NULL;
 	_label = NULL;
@@ -24,6 +25,7 @@ Dataset::Dataset(){
 
 Dataset::Dataset(const char* dataPath){
 	_batchCtr = 0;
+	_recogCtr = 0;
 	_notOrig = false;
 	_frameRange = 0;
 	int maxDataNum = 1200000;
@@ -495,7 +497,28 @@ void   Dataset::printLabelMap(map<string, int> Map){
 }
 */
 
-
+void Dataset::getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel){
+	// use shuffled trainX to get batch sequentially
+	float** batchFtre = new float*[batchSize];
+	if (_recogCtr + batchSize > _dataNum ){
+		batchSize = _dataNum - _recogCtr;
+		cout << "reaches the bottom of data, will reduce batchSize to " << batchSize << endl;
+	}	
+	batchLabel.clear();
+		for (int i = 0; i < batchSize; i++){
+			batchFtre[i] = _data[ _recogCtr ];
+			batchLabel.push_back( _label[ _recogCtr ] );
+			_recogCtr ++;
+		}
+	batch = inputFtreToMat( batchFtre, _featureDim, batchSize);
+	//batchLabel = outputNumtoBin( batchOutput, batchSize );
+	// free tmp pointers
+	delete[] batchFtre;
+	batchFtre = NULL;
+	if (_recogCtr == _dataNum ){
+		_recogCtr = 0;
+	}
+}
 void Dataset::getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom){
 	// use shuffled trainX to get batch sequentially
 	float** batchFtre = new float*[batchSize];

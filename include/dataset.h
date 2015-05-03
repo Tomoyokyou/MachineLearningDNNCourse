@@ -46,7 +46,9 @@ class Dataset{
 	
 	//map<string, int> getLabelMap();
 	//map<string, string> getTo39PhonemeMap();
+	
 	void   getBatch(int batchSize, mat& batch, mat& batchLabel, bool isRandom);
+	void   getRecogData(int batchSize, mat& batch, vector<size_t>& batchLabel);  
 	//void   getTrainSet(int trainSize, mat& trainData, vector<size_t>& trainLabel);
 	//void   getValidSet(int validSize, mat& validData, vector<size_t>& validLabel);
 	void   dataSegment( Dataset& trainData, Dataset& validData, float trainProp = 0.8);
@@ -63,6 +65,7 @@ private:
 	size_t _labelNum;
 	int _frameRange; //Used for frame ??
 	long int _batchCtr;	
+	int _recogCtr;
 	bool _notOrig;
 	bool _isLabeled;
 	mat    outputNumtoBin(int* outputVector, int vectorSize);
@@ -74,7 +77,7 @@ private:
 	string* _name;
 	float** _data;
 	int* _label; // output phoneme changed to integer
-
+	
 	map<string, int> _labelMap; //Map phoneme to int
 	map<string, string> _To39PhonemeMap; //Map the output to 39 dimension
 	

@@ -16,6 +16,11 @@ int main(){
 	cout << "vector size is: " << label.size();
 	mat label_mat = trainData.getLabel_mat();
 	//label_mat.print();
+	mat batch;
+	vector<size_t> bLabel;
+	for(int i = 0; i < 230; i ++){
+		validData.getRecogData(1000, batch, bLabel);
+	}
 
 	
 
