@@ -91,7 +91,8 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 		
 		clock_t rt4 = clock();
 		feedForward(batchOutput, batchData, true);
-		//
+		// DEBUG PART
+		/*
 		vector<size_t> debug;
 		float ERR=1.0;
 		predict(debug, trainSet);
@@ -111,6 +112,7 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 					core<<endl;
 			exit(1);
 		}
+		*/
 		//
 
 		clock_t rt5 = clock();
