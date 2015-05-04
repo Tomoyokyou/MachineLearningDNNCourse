@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++
-CPPFLAGS=-g -O2 -std=c++11 $(INCLUDE)
+CPPFLAGS=-g -O2 -std=c++11
 NVCC=nvcc -arch=sm_21 -w
 CUDA_DIR=/usr/local/cuda/
 
@@ -18,9 +18,6 @@ LIBS=$(LIBCUMATDIR)lib/libcumatrix.a
 
 all:DIR $(EXECUTABLES)
 
-$(LIBCUMATDIR)lib/libcumatrix.a:
-	@echo "Missing library file, trying to fix it in tool/libcumatrix"
-	@cd tool/libcumatrix/ ; make clean ; make ; cd ../..
 debug: CPPFLAGS+=-g -DDEBUG 
 
 vpath %.h include/
@@ -35,14 +32,17 @@ INCLUDE= -I include/\
 LD_LIBRARY=-L$(CUDA_DIR)lib64 -L$(LIBCUMATDIR)lib
 LIBRARY=-lcuda -lcublas -lcudart -lcumatrix
 
+$(LIBCUMATDIR)lib/libcumatrix.a:
+	@echo "Missing library file, trying to fix it in tool/libcumatrix"
+	@cd tool/libcumatrix/ ; make clean ; make ; cd ../..
 DIR:
 	@echo "checking object and executable directory..."
 	@mkdir -p obj
 	@mkdir -p bin
 
-train:  $(HEADEROBJ) example/train.cpp
+train:$(HEADEROBJ) example/train.cpp
 	@echo "compiling train.app for DNN Training"
-	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
+	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 jason: obj/dataset.o example/debugData.cpp
 	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/debugData.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
