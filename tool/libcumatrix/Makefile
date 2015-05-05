@@ -53,10 +53,10 @@ CPPFLAGS= -std=c++0x $(CFLAGS) $(INCLUDE)
 # +===== Other Phony Target =====+
 # +==============================+
 obj/%.o: %.cpp include/%.h
-	$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
+	@$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
 
 obj/%.o: %.cu
-	$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
+	@$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
 
 obj/%.d: %.cpp
 	@$(CXX) -MM $(CPPFLAGS) $< > $@.$$$$; \
@@ -68,4 +68,4 @@ obj/%.d: %.cpp
 ctags:
 	@if command -v ctags >/dev/null 2>&1; then ctags -R --langmap=C:+.cu *; fi
 clean:
-	rm -rf $(EXECUTABLES) $(EXAMPLE_PROGRAM) obj/* lib/*.a
+	@rm -rf $(EXECUTABLES) $(EXAMPLE_PROGRAM) obj/* lib/*.a

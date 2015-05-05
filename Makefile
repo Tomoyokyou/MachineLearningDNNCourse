@@ -5,10 +5,9 @@ NVCC=nvcc -arch=sm_21 -w
 
 CUDA_DIR=/usr/local/cuda/
 
-EXECUTABLES=train
+EXECUTABLES=train predict
 LIBCUMATDIR=tool/libcumatrix/
-CUMATOBJ=$(LIBCUMATDIR)obj/device_matrix.o $(LIBCUMATDIR)obj/cuda_memory_manager.o
-HEADEROBJ=obj/util.o obj/transforms.o obj/dnn.o obj/dataset.o obj/datasetJason.o obj/parser.o
+HEADEROBJ=obj/util.o obj/transforms.o obj/dnn.o obj/dataset.o obj/parser.o
 
 # +==============================+
 # +======== Phony Rules =========+
@@ -16,11 +15,13 @@ HEADEROBJ=obj/util.o obj/transforms.o obj/dnn.o obj/dataset.o obj/datasetJason.o
 
 .PHONY: debug all clean 
 
+all:DIR TOOLLIB $(EXECUTABLES)
+
 LIBS=$(LIBCUMATDIR)lib/libcumatrix.a
 
-$(LIBCUMATDIR)lib/libcumatrix.a:
-	@echo "Missing library file, trying to fix it in tool/libcumatrix"
-	@cd tool/libcumatrix/ ; make ; cd ../..
+TOOLLIB:
+	@echo "checking LIBS in tool/libcumatrix..."
+	@cd tool/libcumatrix/ ; make clean; make; cd ../..
 debug: CPPFLAGS+=-g -DDEBUG 
 
 vpath %.h include/
@@ -34,35 +35,23 @@ INCLUDE= -I include/\
 
 LD_LIBRARY=-L$(CUDA_DIR)lib64 -L$(LIBCUMATDIR)lib
 LIBRARY=-lcuda -lcublas -lcudart -lcumatrix
-TARGET=test.app
 
 DIR:
 	@echo "checking object and executable directory..."
 	@mkdir -p obj
 	@mkdir -p bin
 
-all:DIR $(EXECUTABLES)
-
-larry: $(HEADEROBJ) example/temp.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
-
-train:  $(HEADEROBJ) example/train.cpp
-	@echo "compiling train.app for DNN Training"
+predict:  $(HEADEROBJ) example/predict.cpp
+	@echo "compiling predict.app for DNN testing"
 	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
-#Pan: $(HEADEROBJ) makeFrameDatasetTest.cpp 
-#	$(CXX) $(CFLAGS) $(INCLUDE) -o $(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
-
-CSV: $(HEADEROBJ) CSVTest.cpp 
-	@echo "compiling CSV2.app for generating CSV format testing results"
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/CSV2.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
+train:  $(HEADEROBJ) example/train.cpp
+	@echo "compiling train.app for DNN training"
+	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 clean:
 	@echo "All objects and executables removed"
 	@rm -f $(EXECUTABLES) obj/* ./*.app
-
-jason: $(HEADEROBJ) jasonTest.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$(TARGET) $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 ctags:
 	@rm -f src/tags tags
