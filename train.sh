@@ -17,9 +17,18 @@ DIM=${INDIM}-128-${OUTDIM}
 
 mkdir -p model
 
+# **********************************
+# *    FOR TRAINING FROM SCRATCH   * 
+# **********************************
 ./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
 --inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
 --momentum 0.9 --outName model/out.mdl --decay ${DECAY} --range 1.5 --dim ${DIM}
 
+# **********************************
+# *     LOAD MODEL AND TRAIN       *
+# **********************************
+#./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
+#--inputdim ${INDIM} --phonenum ${PHONUM} --labeldim ${OUTDIM} --rate ${RATE} --batchsize ${BSIZE} --maxEpoch ${MAXEPOCH} \
+#--momentum 0.9 --outName model/out.mdl --decay ${DECAY} --dim ${DIM} --load model/load.mdl
 
 echo "experiment done!"
