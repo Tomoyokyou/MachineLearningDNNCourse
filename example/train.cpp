@@ -80,11 +80,15 @@ int main(int argc,char** argv){
 		else{	cerr<<"loading file:"<<loadF<<" failed! please check again..."<<endl;return 1;}
 	}
 	else{
-	vector<size_t>dim;
-	parseDim(dims,dim);
-	DNN dnn(&dataset,rate,momentum,var,_inittype,dim,BATCH);
-	dnn.train(b_size,m_e,10000,10000,decay);
-	dnn.save(outF);
+		vector<size_t>dim;
+		parseDim(dims,dim);
+		//for(int i = 0; i < dim.size(); i++){
+		//	cout << dim[i] << " " ;
+		//}
+		cout << endl;
+		DNN dnn(&dataset,rate,momentum,var,_inittype,dim,BATCH);
+		dnn.train(b_size,m_e,10000,10000,decay);
+		dnn.save(outF);
 	}
 	cout<<"end of training!";
 	cout<<"\n model saved as :"<<outF<<endl;

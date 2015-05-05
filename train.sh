@@ -1,19 +1,20 @@
 #DATA=/home/ahpan/DeepLearningHW1/MachineLearningDNNCourse/Data/MLDS_HW1_RELEASE_v1/
-DATA=/home/hui/project/model/
+DATA=/home/hui/model/
+LARRY_DATA=/home/larry/Documents/data/MLDS_HW1_RELEASE_v1/mfcc/
 TYPE=fbank/
-TRAIN=${DATA}${TYPE}train.ark
-TEST=${DATA}${TYPE}test.ark
-LABEL=${DATA}label/label.ark
-INDIM=69
+TRAIN=${LARRY_DATA}train_351.ark
+TEST=${LARRY_DATA}test_351.ark
+LABEL=${DATA}label.ark
+INDIM=351
 OUTDIM=48
 PHONUM=39
 SIZE=1124823
 TESTNUM=180406
-RATE=0.002
+RATE=0.001
 BSIZE=256
-MAXEPOCH=10000
-DECAY=1
-DIM=${INDIM}-128-${OUTDIM}
+MAXEPOCH=100000
+DECAY=0.98
+DIM=${INDIM}-256-${OUTDIM}
 
 mkdir -p model
 

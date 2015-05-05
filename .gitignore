@@ -38,6 +38,11 @@ src/tags
 *.mdl
 model/*
 
+# result .csv file
+*.csv
+./**/*.csv
+result/*
+
 # Temp and Testing cpp files
 temp.cpp
 *Test.cpp

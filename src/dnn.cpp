@@ -83,15 +83,15 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 		mat lastDelta(batchOutput - batchLabel );
 		backPropagate(lastDelta, _learningRate, _momentum); //momentum
 
-		vector<size_t> trainResult;
-		vector<size_t> validResult;
-		predict(trainResult, trainSet);
-		predict(validResult, validSet);
-
-		if( num % 200 == 0 )
+		
+		if( num % 2000 == 0 )
 			_learningRate *= alpha;
 
-		if( num % 500 == 1 ){
+		if( num % 5000 == 1 ){
+			vector<size_t> trainResult;
+			vector<size_t> validResult;
+			predict(trainResult, trainSet);
+			predict(validResult, validSet);
 			Ein = computeErrRate(trainLabel, trainResult);
 			Eout = computeErrRate(validLabel, validResult);
 			
@@ -103,7 +103,7 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 			if(minEout > Eout){
 				minEout = Eout;
 				cout << "bestMdl: Error at: " << minEout << endl;  
-				if(minEout < 0.5){
+				//if(minEout < 0.5){
 					ofstream ofs("best.mdl");
 					if (ofs.is_open()){
 						for(size_t i = 0; i < _transforms.size(); i++){
@@ -111,7 +111,7 @@ void DNN::train(size_t batchSize, size_t maxEpoch = MAX_EPOCH, size_t trainSetNu
 						}
 					}
 					ofs.close();
-				}
+				//}
 			}
 			
 			cout.precision(5);
@@ -236,6 +236,8 @@ bool DNN::load(const string& fn){
 void DNN::feedForward(mat& outputMat, const mat& inputMat, bool train){
 	mat tempInputMat = inputMat;
 	for(size_t i = 0; i < _transforms.size(); i++){
+		//cout << "Transform: " << (_transforms.at(i))->getInputDim() << " " << (_transforms.at(i))->getOutputDim() << endl;
+		//cout << "Input feature: " << inputMat.getRows() << endl;
 		(_transforms.at(i))->forward(outputMat, tempInputMat, train);
 		tempInputMat = outputMat;
 	}
