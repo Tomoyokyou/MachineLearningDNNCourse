@@ -1,8 +1,9 @@
-DATA=/home/ahpan/DeepLearningHW1/MachineLearningDNNCourse/Data/MLDS_HW1_RELEASE_v1/
+#DATA=/home/ahpan/DeepLearningHW1/MachineLearningDNNCourse/Data/MLDS_HW1_RELEASE_v1/
+DATA=/home/hui/project/model/
 TYPE=mfcc/
 TRAIN=${DATA}${TYPE}train.ark
 TEST=${DATA}${TYPE}test.ark
-LABEL=${DATA}label/train.lab
+LABEL=${DATA}label/label.ark
 INDIM=39
 OUTDIM=48
 PHONUM=39
@@ -17,7 +18,7 @@ DECAY=1
 INITMODEL=model/momentExpInit.mdl
 MODELDIR=model/initexp
 UNIRANGE="0.1 0.5 1 2";
-DIM=${INDIM}-128-128-${OUTDIM}
+DIM=${INDIM}-128-${OUTDIM}
 
 
 ./bin/train.app ${TRAIN} ${TEST} ${LABEL} --trainnum ${SIZE} --testnum ${TESTNUM} --labelnum ${SIZE} --outputdim ${OUTDIM} \
