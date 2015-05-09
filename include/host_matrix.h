@@ -13,24 +13,24 @@ public:
 	class Transpose {
 	public:
 		host_matrix<T> operator + (const host_matrix<T>& rhs) {
-			host_matrix<T> result(_m._rows,_m.cols);
+			host_matrix<T> result(_m._rows,_m._cols);
 			host_geam(_m,rhs,result,(T)1.0,(T)1.0,true,false);
 			return result;
 		}
 
 		host_matrix<T> operator - (const host_matrix<T>& rhs) {
-			host_matrix<T> result(_m._rows,_m.cols);
+			host_matrix<T> result(_m._rows,_m._cols);
 			host_geam(_m,rhs,result,(T)1.0,(T)-1.0,true,false);
 			return result;
 		}
 
 		host_matrix<T> operator * (const host_matrix<T>& rhs) {
-			host_matrix<T> result(_m.cols,rhs._cols);
+			host_matrix<T> result(_m._cols,rhs._cols);
 			host_gemm(_m,rhs,result,(T)1.0,(T)1.0,true,false);
 			return result;
 		}
 		host_matrix<T> operator * (const Transpose rhs) {
-			host_matrix<T> result(_m.cols,rhs._rows);
+			host_matrix<T> result(_m._cols,rhs._rows);
 			host_gemm(_m,rhs,result,(T)1.0,T(1.0),true,true);
 			return result;
 		}
