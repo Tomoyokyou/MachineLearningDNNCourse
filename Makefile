@@ -16,7 +16,7 @@ LIBS=$(LIBCUMATDIR)lib/libcumatrix.a
 
 .PHONY: debug all clean 
 
-all:DIR $(EXECUTABLES)
+all:DIR TOOL $(EXECUTABLES)
 
 debug: CPPFLAGS+=-g -DDEBUG 
 
@@ -32,9 +32,9 @@ INCLUDE= -I include/\
 LD_LIBRARY=-L$(CUDA_DIR)lib64 -L$(LIBCUMATDIR)lib
 LIBRARY=-lcuda -lcublas -lcudart -lcumatrix
 
-$(LIBCUMATDIR)lib/libcumatrix.a:
-	@echo "Missing library file, trying to fix it in tool/libcumatrix"
-	@cd tool/libcumatrix/ ; make clean ; make ; cd ../..
+TOOL:
+	@echo "Checking library file in tool/libcumatrix"
+	@cd tool/libcumatrix/ ;  make ; cd ../..
 DIR:
 	@echo "checking object and executable directory..."
 	@mkdir -p obj
@@ -42,7 +42,7 @@ DIR:
 
 train:$(HEADEROBJ) example/train.cpp
 	@echo "compiling train.app for DNN Training"
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
+	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 jason: obj/dataset.o example/debugData.cpp
 	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/debugData.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 

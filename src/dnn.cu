@@ -138,8 +138,10 @@ void DNN::train(Dataset& labeledData, size_t batchSize, size_t maxEpoch = MAX_EP
 
 		//clock_t rt6 = clock();	
 		
-		if( num % 200 == 0 )
+		if( num % 2000 == 0 ){
 			_learningRate *= alpha;
+			if(_learningRate<1.0e-030){cout<<"learning rate too small...";return;}
+		}
 
 		if( num % oneEpoch == 1 ){
 			epochCnt++;

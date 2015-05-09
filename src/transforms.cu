@@ -155,7 +155,6 @@ void Sigmoid::backPropagate(mat& out,const mat& delta, float rate,float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	//mat one(_i.getRows(),_i.getCols(),1);
 	out = _i & ((float)1.0-_i) & (~withoutBias * delta);   // this part need tesing
 	// update weight
 	mat _inp(_i);
@@ -163,7 +162,6 @@ void Sigmoid::backPropagate(mat& out,const mat& delta, float rate,float momentum
 	_pw= delta * ~_inp + _pw * momentum;
 	rate/=(float)_i.getCols();
 	_w -= _pw * rate;
-	//gemm(delta,_inp,_w,(float)-1.0*rate,(float)1.0,false,true);
 }
 void Sigmoid::write(ofstream& out){
 	out<<"<sigmoid> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;
@@ -208,7 +206,6 @@ void Softmax::backPropagate(mat& out,const mat& delta,float rate, float momentum
 	assert( (delta.getRows()==_w.getRows()) && (delta.getCols()==_i.getCols()) );
 	mat withoutBias(_w.getRows(),_w.getCols()-1);
 	CCE(cudaMemcpy(withoutBias.getData(),_w.getData(),withoutBias.size() * sizeof(float),cudaMemcpyDeviceToDevice));
-	//mat one(_i.getRows(),_i.getCols(),1);
 	out = _i & ((float)1.0-_i) & (~withoutBias * delta);   // this part need tesing
 	//update weight
 	mat inp(_i);
@@ -216,8 +213,6 @@ void Softmax::backPropagate(mat& out,const mat& delta,float rate, float momentum
 	_pw=delta * ~inp + _pw * momentum;
 	rate/=(float)_i.getCols();
 	_w-= _pw * rate;
-	//gemm(delta,inp,_w,(float)-1.0*rate,(float)1.0,false,true);
-	
 }
 void Softmax::write(ofstream& out){
 	out<<"<softmax> "<<_w.getRows()<<" "<<_w.getCols()-1<<endl;

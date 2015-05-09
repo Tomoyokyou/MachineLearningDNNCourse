@@ -43,16 +43,14 @@ CUDA_INCLUDE=$(INCLUDE) \
 
 CPPFLAGS= -std=c++0x $(CFLAGS) $(INCLUDE)
 
-#example2: $(OBJ) matMultTest.cu
-#	$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ $^ $(LIBRARY_PATH) $(LIBRARY)
 # +==============================+
 # +===== Other Phony Target =====+
 # +==============================+
 obj/%.o: %.cpp include/%.h
-	$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
+	@$(CXX) $(CPPFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
 
 obj/%.o: %.cu
-	$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
+	@$(NVCC) $(NVCCFLAGS) $(CFLAGS) $(CUDA_INCLUDE) -o $@ -c $<
 
 obj/%.d: %.cpp
 	@$(CXX) -MM $(CPPFLAGS) $< > $@.$$$$; \
