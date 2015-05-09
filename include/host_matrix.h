@@ -130,8 +130,13 @@ void host_gemm(const host_matrix<T>& A,const host_matrix<T>& B, host_matrix<T>& 
 	if(transB)
 		swap(k,l);
 	assert(n==k);
-	C.resize(m,l);
-	if(beta!=1.0){C*=beta;}
+	if(beta!=0){
+		assert(C.getRows()==m&&C.getCols()==l);
+		if(beta!=1.0)
+			C*=beta;
+	}
+	else
+		C.resize(m,l);
 	bool m_a=false;
 	if(alpha!=1.0){m_a=true;}
 	
@@ -309,6 +314,7 @@ host_matrix<T> host_matrix<T>::operator - (const typename host_matrix<T>::Transp
 
 template<class T>
 host_matrix<T>& host_matrix<T>::operator /= (T val){
+	assert(val!=0.0);
 	size_t s=_rows*_cols;
 	*this *= (T) 1.0/(T)val;
 	return *this;
@@ -351,8 +357,8 @@ host_matrix<T>& host_matrix<T>::operator *= (const Transpose& rhs){
 }
 template<class T>
 host_matrix<T> host_matrix<T>::operator * (const typename host_matrix::Transpose& rhs) const{
-	host_matrix<T> temp(_rows,rhs._m.rows,0);
-	host_gemm(*this,rhs,temp,(T)1.0,(T)0.0,false,true);
+	host_matrix<T> temp(_rows,rhs._m._rows,0);
+	host_gemm(*this,rhs._m,temp,(T)1.0,(T)0.0,false,true);
 	return temp;
 }
 	
@@ -407,7 +413,7 @@ void host_matrix<T>::print(int precision) const{
 	for(size_t t=0;t<_rows;++t){
 		cout<<fixed<<setprecision(precision);
 		for(size_t k=0;k<_cols;++k){
-			cout<<" "<<_data[k*_rows+t];
+			cout<<setw(9)<<_data[k*_rows+t];
 		}
 		cout<<endl;
 	}
