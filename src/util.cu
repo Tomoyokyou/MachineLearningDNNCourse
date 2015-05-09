@@ -39,7 +39,7 @@ void rand_norm(mat& w,myNnGen& ran){
 
 void pushOne(mat& in){
 	mat tmp(~in);
-	thrust::device_vector<float> dvec(tmp.size()+(tmp.getRows()+1),1);
+	thrust::device_vector<float> dvec(tmp.size()+tmp.getRows(),1);
 	thrust::device_ptr<float> mat_ptr(tmp.getData());
 	thrust::copy(mat_ptr,mat_ptr+tmp.size(),dvec.begin());
 	thrust::device_ptr<float> vec_ptr=dvec.data();

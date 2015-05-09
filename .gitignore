@@ -37,7 +37,8 @@ src/tags
 # Model file
 *.mdl
 model/*
-
+result/*
+*.cst
 # Backup .orig file
 *.orig
 ./**/*.orig

@@ -34,7 +34,7 @@ LIBRARY=-lcuda -lcublas -lcudart -lcumatrix
 
 TOOL:
 	@echo "Checking library file in tool/libcumatrix"
-	@cd tool/libcumatrix/ ;  make ; cd ../..
+	@cd tool/libcumatrix/ ; make clean;  make ; cd ../..
 DIR:
 	@echo "checking object and executable directory..."
 	@mkdir -p obj
@@ -44,11 +44,9 @@ train:$(HEADEROBJ) example/train.cpp
 	@echo "compiling train.app for DNN Training"
 	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
-jason: obj/dataset.o example/debugData.cpp
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/debugData.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
-CSV: $(HEADEROBJ) CSVTest.cpp 
-	@echo "compiling CSV2.app for generating CSV format testing results"
-	$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/CSV2.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY) 
+predict:$(HEADEROBJ) example/predict.cpp
+	@echo "compiling predict.app for DNN Testing"
+	@$(CXX) $(CPPFLAGS) $(INCLUDE) -o bin/$@.app $^ $(LIBS) $(LIBRARY) $(LD_LIBRARY)
 
 clean:
 	@echo "All objects and executables removed"
